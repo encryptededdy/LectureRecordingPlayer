@@ -10,6 +10,9 @@ import android.webkit.WebViewClient
 import kotlinx.android.synthetic.main.activity_canvas_browser.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import android.widget.Toast
+import nz.zhang.lecturerecordingplayer.recordings.Recording
+import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -45,8 +48,16 @@ class CanvasBrowser : AppCompatActivity() {
     fun readSource(view: View) {
         val m = Pattern.compile(RECORDING_REGEX)
                 .matcher(currentPageSrc)
+        var recordingsAdded = 0
         while (m.find()) {
-            Log.d("readURL", m.group())
+            recordingsAdded++
+            RecordingStore.recordings.add(Recording(m.group()))
+            //Log.d("readURL", m.group())
+        }
+        if (recordingsAdded == 0) {
+            Toast.makeText(this, "No lecture recordings found on this page", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Found & added $recordingsAdded lecture recordings!", Toast.LENGTH_SHORT).show()
         }
     }
 

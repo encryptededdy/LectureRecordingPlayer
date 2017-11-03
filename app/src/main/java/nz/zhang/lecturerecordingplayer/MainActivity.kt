@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import nz.zhang.lecturerecordingplayer.recordings.Recording
 
 class MainActivity : AppCompatActivity() {
 
@@ -17,5 +18,10 @@ class MainActivity : AppCompatActivity() {
     fun showCanvas(view: View) {
         val canvasIntent = Intent(this, CanvasBrowser::class.java)
         startActivity(canvasIntent)
+    }
+
+    fun showRecordingList(view: View) {
+        val recordingIntent = Intent(this, RecordingList::class.java)
+        startActivity(recordingIntent)
     }
 }
