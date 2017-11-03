@@ -13,7 +13,7 @@ class RecordingList : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recording_list)
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val adapter = ArrayAdapter<Recording>(this, android.R.layout.simple_list_item_1, RecordingStore.recordings)
 

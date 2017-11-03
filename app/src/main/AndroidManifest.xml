@@ -26,7 +26,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nz.zhang.lecturerecordingplayer.MainActivity" />
         </activity>
-        <activity android:name=".RecordingList"></activity>
+        <activity android:name=".RecordingList"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/title_activity_recording_browser">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nz.zhang.lecturerecordingplayer.MainActivity" /></activity>
     </application>
 
 </manifest>
