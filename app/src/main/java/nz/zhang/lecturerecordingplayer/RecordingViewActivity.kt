@@ -51,13 +51,18 @@ class RecordingViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_recording_view)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // Start up the webview
+        downloadWebView.visibility = View.GONE
         downloadWebView.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
                 cookies = CookieManager.getInstance().getCookie(url)
-                if (webview.url.contains("mediastore.auckland.ac.nz")) {
+                if (downloadWebView.url.contains("mediastore.auckland.ac.nz")) {
                     // OK we're authenticated - let's start the download
+                    downloadWebView.visibility = View.GONE
+                    downloadRecording()
                 } else {
                     // Oh no, we've been redirected - need to get the user to authenticate
+                    downloadWebView.visibility = View.VISIBLE
+                    Toast.makeText(applicationContext, "Please log in to download", Toast.LENGTH_LONG).show()
                 }
                 super.onPageFinished(view, url)
             }
@@ -75,7 +80,7 @@ class RecordingViewActivity : AppCompatActivity() {
         courseTime.text = df.format(recording.recordingDate)
     }
 
-    fun downloadRecording(view: View) {
+    fun downloadRecording() {
         Fetch.Settings(applicationContext)
                 .enableLogging(true)
                 .apply()
@@ -85,19 +90,26 @@ class RecordingViewActivity : AppCompatActivity() {
         fetch.addFetchListener(object : FetchListener {
             override fun onUpdate(id: Long, status: Int, progress: Int, downloadedBytes: Long, fileSize: Long, error: Int) {
                 Log.d("DownloadStatus", "Status: $status, Progress: $progress, Error: $error, FileSize: $fileSize")
-
+                if (status == Fetch.STATUS_ERROR) {
+                    Toast.makeText(applicationContext, "Download error", Toast.LENGTH_LONG).show()
+                } else {
+                    progressBar.progress = progress // update progress bar
+                }
             }
         });
         val downloadId = fetch.enqueue(request)
         if (downloadId != Fetch.ENQUEUE_ERROR_ID.toLong()) {
-            Toast.makeText(applicationContext, "Download started...", Toast.LENGTH_LONG).show()
+            // Download started successfully
+            downloadButton.text = getString(R.string.downloading)
+            downloadButton.isEnabled = false
+        } else {
+            Toast.makeText(applicationContext, "Error starting download", Toast.LENGTH_LONG).show()
         }
-        Toast.makeText(applicationContext, "Downloading Recording...", Toast.LENGTH_LONG).show()
         Log.d("Download", "${recording.urlNoExtension}.mp4")
     }
 
     fun loadRecording(view: View) {
-        downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
+        downloadWebView.loadUrl("${recording.urlNoExtension}.mp4")
     }
 
 }

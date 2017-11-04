@@ -6,4 +6,5 @@
     <string name="list_recordings">List Recordings</string>
     <string name="title_activity_recording_view">Lecture Recording</string>
     <string name="download">Download</string>
+    <string name="downloading">Downloading</string>
 </resources>
