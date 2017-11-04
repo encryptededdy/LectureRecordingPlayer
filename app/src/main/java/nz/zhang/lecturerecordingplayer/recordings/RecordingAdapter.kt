@@ -26,12 +26,16 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
 
     val recordings = recordingsList
 
-    lateinit var courseName: TextView
-    lateinit var courseTime: TextView
-    lateinit var background: ConstraintLayout
-    lateinit var downloadedIcon: ImageView
+    init {
+        setHasStableIds(true)
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        lateinit var courseName: TextView
+        lateinit var courseTime: TextView
+        lateinit var background: ConstraintLayout
+        lateinit var downloadedIcon: ImageView
+
         init {
             courseName = itemView.courseName
             courseTime = itemView.courseTime
@@ -54,23 +58,29 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
     override fun onBindViewHolder(viewHolder: RecordingAdapter.ViewHolder, position: Int) {
         // Get the data model based on position
         val recording = recordings.get(position)
-        background.setOnClickListener(object : View.OnClickListener {
+        viewHolder.background.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
-                val recordingIntent = Intent(background.context, RecordingViewActivity::class.java)
+                val recordingIntent = Intent(viewHolder.background.context, RecordingViewActivity::class.java)
                 recordingIntent.putExtra(RecordingViewActivity.RECORDING_ID, position)
-                startActivity(background.context, recordingIntent, recordingIntent.extras)
+                startActivity(viewHolder.background.context, recordingIntent, recordingIntent.extras)
             }
         })
         if (recording.downloaded) {
-            downloadedIcon.visibility = View.VISIBLE
+            viewHolder.downloadedIcon.visibility = View.VISIBLE
+        } else {
+            viewHolder.downloadedIcon.visibility = View.INVISIBLE
         }
         // Set item views
-        courseName.text = "${recording.courseName} ${recording.courseNumber}"
+        viewHolder.courseName.text = "${recording.courseName} ${recording.courseNumber}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault());
-        courseTime.text = df.format(recording.recordingDate)
+        viewHolder.courseTime.text = df.format(recording.recordingDate)
     }
 
     override fun getItemCount(): Int {
         return recordings.size
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 }

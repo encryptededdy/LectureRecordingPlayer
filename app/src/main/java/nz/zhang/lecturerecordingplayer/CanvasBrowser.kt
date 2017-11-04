@@ -50,14 +50,14 @@ class CanvasBrowser : AppCompatActivity() {
                 .matcher(currentPageSrc)
         var recordingsAdded = 0
         while (m.find()) {
-            recordingsAdded++
-            RecordingStore.recordings.add(Recording(m.group()))
+            if (RecordingStore.add(Recording(m.group())))
+                recordingsAdded++
             //Log.d("readURL", m.group())
         }
         if (recordingsAdded == 0) {
             Toast.makeText(this, "No lecture recordings found on this page", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Found & added $recordingsAdded lecture recordings!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Found & added $recordingsAdded new lecture recordings!", Toast.LENGTH_SHORT).show()
         }
     }
 

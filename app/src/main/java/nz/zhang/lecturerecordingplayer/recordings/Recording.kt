@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import android.os.Environment.getExternalStorageDirectory
+import android.webkit.JavascriptInterface
 import java.io.File
 
 
@@ -27,7 +28,7 @@ const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.mp3|-slides\\.m4v
 
 const val TIME_REGEX: String = "(?<=(\\/))\\d{12}(?=(\\.))"
 
-class Recording(val url: String) {
+class Recording(val url: String) : Comparable<Recording> {
     lateinit var courseName: String
     lateinit var courseNumber: String
     lateinit var courseStream: String
@@ -89,6 +90,26 @@ class Recording(val url: String) {
         }
     }
 
+    override fun hashCode(): Int {
+        return Objects.hash(urlNoExtension)
+    }
+
+    override fun compareTo(other: Recording): Int {
+        return recordingDate.compareTo(other.recordingDate)
+    }
+
+    fun checkFS() {
+        val file = File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4")
+        if (file.isFile() && file.length() > 10000) {
+            Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Exists")
+            downloaded = true
+        } else if (file.length() < 10000) {
+            // Delete empty files
+            file.delete()
+        }
+        //Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Doesn't Exist")
+    }
+
     fun downloadRecording(context: Context, cookies: String) {
         val dir = File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/")
         dir.mkdirs() // creates needed dirs
@@ -105,6 +126,8 @@ class Recording(val url: String) {
             downloading = true
             sendUpdate(0, false)
         } else {
+            // Error, so delete the file if any.
+            File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4").delete()
             sendUpdate(0, true)
         }
         fetch.addFetchListener(object : FetchListener {
@@ -112,6 +135,9 @@ class Recording(val url: String) {
                 Log.d("DownloadStatus", "ID: $id, Status: $status, Progress: $progress, Error: $error, FileSize: $fileSize")
                 if (id == downloadID) {
                     if (status == Fetch.STATUS_ERROR) {
+                        downloading = false
+                        // Delete error file if it exists
+                        File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4").delete()
                         sendUpdate(progress, true)
                     } else if (status == Fetch.STATUS_DOWNLOADING) {
                         sendUpdate(progress, false)

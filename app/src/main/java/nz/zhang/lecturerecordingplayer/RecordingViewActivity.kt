@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.app.Activity
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.webkit.WebViewClient
 
 import kotlinx.android.synthetic.main.activity_recording_view.*
 import nz.zhang.lecturerecordingplayer.recordings.Recording
@@ -25,15 +24,14 @@ import android.os.Environment
 import android.os.Environment.DIRECTORY_DOWNLOADS
 import android.support.v4.app.FragmentActivity
 import android.util.Log
-import android.webkit.CookieManager
-import android.webkit.DownloadListener
-import android.webkit.WebView
 import kotlinx.android.synthetic.main.activity_canvas_browser.*
 import com.tonyodev.fetch.Fetch
 import com.tonyodev.fetch.request.Request
 import android.view.Gravity
+import android.webkit.*
 import com.tonyodev.fetch.listener.FetchListener
 import nz.zhang.lecturerecordingplayer.R.id.downloadWebView
+import nz.zhang.lecturerecordingplayer.R.string.download
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStatusListener
 
 
@@ -52,18 +50,19 @@ class RecordingViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_recording_view)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // Start up the webview
-        downloadWebView.visibility = View.GONE
+        downloadWebView.visibility = View.INVISIBLE
         downloadWebView.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
                 cookies = CookieManager.getInstance().getCookie(url)
-                if (downloadWebView.url.contains("mediastore.auckland.ac.nz")) {
+                if (view?.title.equals("Media preview - The University of Auckland")) {
                     // OK we're authenticated - let's start the download
-                    downloadWebView.visibility = View.GONE
+                    downloadWebView.visibility = View.INVISIBLE
                     recording.downloadRecording(applicationContext, cookies)
                 } else {
                     // Oh no, we've been redirected - need to get the user to authenticate
                     downloadWebView.visibility = View.VISIBLE
                     Toast.makeText(applicationContext, "Please log in to download", Toast.LENGTH_LONG).show()
+                    Log.d("LoadedPage", view?.url)
                 }
                 super.onPageFinished(view, url)
             }
@@ -91,8 +90,9 @@ class RecordingViewActivity : AppCompatActivity() {
         recording.addListener(object : RecordingStatusListener {
             override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
                 if (error) {
-                    Toast.makeText(applicationContext, "Download error", Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, "Download error. You may need to authenticate", Toast.LENGTH_LONG).show()
                     downloadButton.text = getString(R.string.error)
+                    downloadButton.isEnabled = true
                 } else if (recording.downloading) {
                     downloadButton.text = getString(R.string.downloading)
                     downloadButton.isEnabled = false
@@ -106,7 +106,8 @@ class RecordingViewActivity : AppCompatActivity() {
     }
 
     fun loadRecording(view: View) {
-        downloadWebView.loadUrl("${recording.urlNoExtension}.mp4")
+        Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
+        downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
     }
 
 }

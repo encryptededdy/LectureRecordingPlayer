@@ -1,6 +1,7 @@
 package nz.zhang.lecturerecordingplayer
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
@@ -10,6 +11,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.ContextCompat.startActivity
 import android.view.View
 import com.tonyodev.fetch.Fetch
+import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
+
+const val PREFS_NAME = "RecordingStorage"
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +29,8 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(this,
                         Array<String>(1){Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
+        RecordingStore.sharedPrefs = getSharedPreferences(PREFS_NAME, 0)
+        RecordingStore.loadList()
     }
 
     fun showCanvas(view: View) {
