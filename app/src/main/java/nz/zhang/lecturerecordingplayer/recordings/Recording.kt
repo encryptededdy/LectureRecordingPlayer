@@ -81,6 +81,14 @@ class Recording(val url: String) {
         for (listener: RecordingStatusListener in statusListeners) listener.update(downloading, downloaded, progress, error)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other is Recording) {
+            return urlNoExtension.equals(other.urlNoExtension)
+        } else {
+            return false
+        }
+    }
+
     fun downloadRecording(context: Context, cookies: String) {
         val dir = File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/")
         dir.mkdirs() // creates needed dirs

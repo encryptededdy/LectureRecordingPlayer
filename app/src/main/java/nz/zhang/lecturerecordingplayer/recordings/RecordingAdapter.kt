@@ -9,12 +9,14 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.ProgressBar
 import nz.zhang.lecturerecordingplayer.R
 import android.widget.TextView
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_recording_view.*
 import kotlinx.android.synthetic.main.item_recording.view.*
-import nz.zhang.lecturerecordingplayer.R.id.courseName
-import nz.zhang.lecturerecordingplayer.R.id.courseTime
+import nz.zhang.lecturerecordingplayer.R.id.*
 import nz.zhang.lecturerecordingplayer.RecordingViewActivity
 import java.text.DateFormat
 import java.util.*
@@ -27,12 +29,14 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
     lateinit var courseName: TextView
     lateinit var courseTime: TextView
     lateinit var background: ConstraintLayout
+    lateinit var downloadedIcon: ImageView
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             courseName = itemView.courseName
             courseTime = itemView.courseTime
             background = itemView.backLayout
+            downloadedIcon = itemView.downloadedIcon
         }
     }
 
@@ -57,6 +61,9 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
                 startActivity(background.context, recordingIntent, recordingIntent.extras)
             }
         })
+        if (recording.downloaded) {
+            downloadedIcon.visibility = View.VISIBLE
+        }
         // Set item views
         courseName.text = "${recording.courseName} ${recording.courseNumber}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault());
