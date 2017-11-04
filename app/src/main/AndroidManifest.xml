@@ -26,12 +26,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nz.zhang.lecturerecordingplayer.MainActivity" />
         </activity>
-        <activity android:name=".RecordingList"
-            android:parentActivityName=".MainActivity"
-            android:label="@string/title_activity_recording_browser">
+        <activity
+            android:name=".RecordingListActivity"
+            android:label="@string/title_activity_recording_browser"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="nz.zhang.lecturerecordingplayer.MainActivity" /></activity>
+                android:value="nz.zhang.lecturerecordingplayer.MainActivity" />
+        </activity>
+        <activity
+            android:name=".RecordingViewActivity"
+            android:label="@string/title_activity_recording_view"
+            android:parentActivityName=".RecordingListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nz.zhang.lecturerecordingplayer.RecordingListActivity" />
+        </activity>
     </application>
 
 </manifest>

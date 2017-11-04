@@ -4,9 +4,6 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_main.*
-import nz.zhang.lecturerecordingplayer.recordings.Recording
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showRecordingList(view: View) {
-        val recordingIntent = Intent(this, RecordingList::class.java)
+        val recordingIntent = Intent(this, RecordingListActivity::class.java)
         startActivity(recordingIntent)
     }
 }
