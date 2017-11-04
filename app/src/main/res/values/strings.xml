@@ -7,4 +7,6 @@
     <string name="title_activity_recording_view">Lecture Recording</string>
     <string name="download">Download</string>
     <string name="downloading">Downloading</string>
+    <string name="downloaded">Downloaded</string>
+    <string name="error">Error</string>
 </resources>
