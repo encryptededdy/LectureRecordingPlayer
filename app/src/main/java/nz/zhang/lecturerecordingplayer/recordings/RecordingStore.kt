@@ -13,11 +13,11 @@ object RecordingStore {
     fun add(recording: Recording): Boolean {
         if (!recordings.contains(recording)) {
             recordings.add(recording)
+            recordings.sort() // sort by date
             // write to prefs
             val editor = sharedPrefs.edit()
             editor.putString(STORAGE_KEY, Gson().toJson(recordings))
             editor.apply()
-            recordings.sort() // sort by date
             return true
         } else {
             return false
