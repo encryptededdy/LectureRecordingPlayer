@@ -1,5 +1,5 @@
 # LectureRecordingPlayer
-Android Lecture Recording Player/Manager for the University of Auckland
+Android Lecture Recording Player/Manager for the University of Auckland. My first Android App and experience with Kotlin
 * Automatically scrapes lecture recording links from loaded webpages
 * Parses lecture recording data (course, date, name) and stores it in a list for browsing
 * Authenticates with UoA SSO and downloads lecture recordings
