@@ -1,8 +1,7 @@
 package nz.zhang.lecturerecordingplayer.recordings
 
-import com.google.gson.Gson
-import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 const val STORAGE_KEY = "recordings"
@@ -27,6 +26,7 @@ object RecordingStore {
 
     fun loadList() {
         val recordingListType = object : TypeToken<ArrayList<Recording>>() {}.type
+        System.out.println(sharedPrefs.getString(STORAGE_KEY, ""))
         val storedRecordings: ArrayList<Recording>? = Gson().fromJson(sharedPrefs.getString(STORAGE_KEY, ""), recordingListType)
         if (storedRecordings != null) {
             recordings = storedRecordings

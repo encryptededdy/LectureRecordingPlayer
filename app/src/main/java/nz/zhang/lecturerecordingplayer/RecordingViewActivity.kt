@@ -1,39 +1,22 @@
 package nz.zhang.lecturerecordingplayer
 
 import android.annotation.SuppressLint
+import android.net.http.SslError
 import android.os.Bundle
-import android.app.Activity
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
-
+import android.webkit.CookieManager
+import android.webkit.SslErrorHandler
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_recording_view.*
 import nz.zhang.lecturerecordingplayer.recordings.Recording
+import nz.zhang.lecturerecordingplayer.recordings.RecordingStatusListener
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
-import android.widget.Toast
-import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.database.Cursor
-import android.net.Uri
-import android.os.Environment
-import android.os.Environment.DIRECTORY_DOWNLOADS
-import android.support.v4.app.FragmentActivity
-import android.util.Log
-import kotlinx.android.synthetic.main.activity_canvas_browser.*
-import com.tonyodev.fetch.Fetch
-import com.tonyodev.fetch.request.Request
-import android.view.Gravity
-import android.webkit.*
-import com.tonyodev.fetch.listener.FetchListener
-import nz.zhang.lecturerecordingplayer.R.id.downloadWebView
-import nz.zhang.lecturerecordingplayer.R.string.download
-import nz.zhang.lecturerecordingplayer.recordings.RecordingStatusListener
-
 
 class RecordingViewActivity : AppCompatActivity() {
 
@@ -47,17 +30,22 @@ class RecordingViewActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_recording_view)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         // Start up the webview
-        downloadWebView.visibility = View.INVISIBLE
+        downloadWebView.visibility = View.GONE
         downloadWebView.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
-                cookies = CookieManager.getInstance().getCookie(url)
                 if (view?.title.equals("Media preview - The University of Auckland")) {
                     // OK we're authenticated - let's start the download
-                    downloadWebView.visibility = View.INVISIBLE
+                    downloadWebView.visibility = View.GONE
+                    cookies = CookieManager.getInstance().getCookie(url)
                     recording.downloadRecording(applicationContext, cookies)
+                } else if (view?.title.equals("User dashboard")) {
+                    // Loaded CANVAS! Now let's load the media page
+                    //downloadWebView.visibility = View.GONE
+                    downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
                 } else {
                     // Oh no, we've been redirected - need to get the user to authenticate
                     downloadWebView.visibility = View.VISIBLE
@@ -65,6 +53,12 @@ class RecordingViewActivity : AppCompatActivity() {
                     Log.d("LoadedPage", view?.url)
                 }
                 super.onPageFinished(view, url)
+            }
+
+            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+                Toast.makeText(applicationContext, "SSL Error, loading CANVAS now", Toast.LENGTH_SHORT).show()
+                super.onReceivedSslError(view, handler, error)
+                //downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
             }
         }
         downloadWebView.settings.javaScriptEnabled = true
@@ -99,6 +93,7 @@ class RecordingViewActivity : AppCompatActivity() {
                     progressBar.progress = progress
                 } else if (recording.downloaded) {
                     downloadButton.text = getString(R.string.downloaded)
+                    progressBar.progress = 0
                     downloadButton.isEnabled = false
                 }
             }
@@ -106,8 +101,10 @@ class RecordingViewActivity : AppCompatActivity() {
     }
 
     fun loadRecording(view: View) {
+        downloadButton.text = getString(R.string.starting)
+        downloadButton.isEnabled = false
         Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
-        downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
+        downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
     }
 
 }
