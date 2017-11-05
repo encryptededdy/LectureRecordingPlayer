@@ -3,7 +3,7 @@ Android Lecture Recording Player/Manager for the University of Auckland
 * Automatically scrapes lecture recording links from loaded webpages
 * Parses lecture recording data (course, date, name) and stores it in a list for browsing
 * Authenticates with UoA SSO and downloads lecture recordings
-* Playback lecture recordings
+* Playback lecture recordings (using installed apps, custom player todo)
 ### Future todo
 * Better recording management (course grouping etc.)
 * Faster scraping, page depth > 1 scraping
