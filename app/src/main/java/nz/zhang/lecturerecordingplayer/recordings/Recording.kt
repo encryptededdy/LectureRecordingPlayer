@@ -4,20 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import com.tonyodev.fetch.Fetch
 import com.tonyodev.fetch.listener.FetchListener
 import com.tonyodev.fetch.request.Request
-import kotlinx.android.synthetic.main.activity_recording_view.*
-import nz.zhang.lecturerecordingplayer.R
-import nz.zhang.lecturerecordingplayer.R.id.downloadButton
-import nz.zhang.lecturerecordingplayer.R.id.progressBar
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import android.os.Environment.getExternalStorageDirectory
-import android.webkit.JavascriptInterface
-import java.io.File
 
 
 const val COURSENAME_REGEX: String = "(?<=(/))[A-Z]{4,8}(?=(\\d{3}\\w{4,5}/))"
@@ -98,9 +91,13 @@ class Recording(val url: String) : Comparable<Recording> {
         return recordingDate.compareTo(other.recordingDate)
     }
 
+    fun getFile() : File {
+        return File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4")
+    }
+
     fun checkFS() {
-        val file = File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4")
-        if (file.isFile() && file.length() > 10000) {
+        val file = getFile()
+        if (file.isFile && file.length() > 10000) {
             Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Exists")
             downloaded = true
         } else if (file.length() < 10000) {
@@ -148,7 +145,7 @@ class Recording(val url: String) : Comparable<Recording> {
                     }
                 }
             }
-        });
+        })
         Log.d("Download", "$urlNoExtension.mp4")
     }
 

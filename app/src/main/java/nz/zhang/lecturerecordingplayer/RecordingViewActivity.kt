@@ -1,8 +1,10 @@
 package nz.zhang.lecturerecordingplayer
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -17,6 +19,7 @@ import nz.zhang.lecturerecordingplayer.recordings.RecordingStatusListener
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 import java.text.DateFormat
 import java.util.*
+
 
 class RecordingViewActivity : AppCompatActivity() {
 
@@ -80,7 +83,10 @@ class RecordingViewActivity : AppCompatActivity() {
         if (recording.downloaded) {
             downloadButton.text = getString(R.string.downloaded)
             downloadButton.isEnabled = false
+            playButton.isEnabled = true
         }
+
+        // Listener for download status
         recording.addListener(object : RecordingStatusListener {
             override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
                 if (error) {
@@ -95,6 +101,7 @@ class RecordingViewActivity : AppCompatActivity() {
                     downloadButton.text = getString(R.string.downloaded)
                     progressBar.progress = 0
                     downloadButton.isEnabled = false
+                    playButton.isEnabled = true
                 }
             }
         })
@@ -105,6 +112,13 @@ class RecordingViewActivity : AppCompatActivity() {
         downloadButton.isEnabled = false
         Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
         downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
+    }
+
+    fun playRecording(view: View) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        applicationContext.startActivity(intent)
     }
 
 }
