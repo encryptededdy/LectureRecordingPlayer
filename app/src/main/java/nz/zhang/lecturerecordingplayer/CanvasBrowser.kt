@@ -3,6 +3,7 @@ package nz.zhang.lecturerecordingplayer
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.MenuItem
 import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -26,6 +27,16 @@ class CanvasBrowser : AppCompatActivity() {
         setContentView(R.layout.activity_canvas_browser)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         loadPage()
+    }
+
+    // Handle back button functionality
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return if (item?.itemId == android.R.id.home) {
+            onBackPressed()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")

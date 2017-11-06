@@ -11,4 +11,10 @@
     <string name="delete">Delete</string>
     <string name="error">Error</string>
     <string name="starting">Authenticating</string>
+    <string name="sync">Sync</string>
+    <string name="delete_title">Delete Recording</string>
+    <string name="delete_body">Are you sure you want to delete this recording?</string>
+    <string name="download_error">Download error. You may need to authenticate</string>
+    <string name="sync_body">This will sync missing recordings for your courses from/to the server. Only links are synced, no video data will be transferred.</string>
+    <string name="sync_title">Sync Recording List</string>
 </resources>

@@ -30,8 +30,8 @@ class Recording(val url: String) : Comparable<Recording> {
 
     @Transient private val statusListeners: ArrayList<RecordingStatusListener> = ArrayList()
 
-    var downloading = false
-    var downloaded = false
+    @Transient var downloading = false
+    @Transient var downloaded = false
 
     @Transient var dlProgress = 0
     @Transient var dlError = false

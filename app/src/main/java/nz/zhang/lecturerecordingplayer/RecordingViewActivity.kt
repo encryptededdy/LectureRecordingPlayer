@@ -93,7 +93,7 @@ class RecordingViewActivity : AppCompatActivity() {
             override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
                 when {
                     error -> {
-                        Toast.makeText(applicationContext, "Download error. You may need to authenticate", Toast.LENGTH_LONG).show()
+                        Toast.makeText(applicationContext, getString(R.string.download_error), Toast.LENGTH_LONG).show()
                         downloadButton.text = getString(R.string.error)
                         downloadButton.isEnabled = true
                     }
@@ -123,8 +123,8 @@ class RecordingViewActivity : AppCompatActivity() {
         if (recording.downloaded) {
             // Delete
             AlertDialog.Builder(this)
-                    .setTitle("Delete Recording")
-                    .setMessage("Are you sure you want to delete this recording?")
+                    .setTitle(getString(R.string.delete_title))
+                    .setMessage(getString(R.string.delete_body))
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(R.string.delete) { p0, p1 -> recording.delete()}
                     .setNegativeButton(android.R.string.no, null)
