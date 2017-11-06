@@ -114,6 +114,9 @@ class Recording(val url: String) : Comparable<Recording> {
         } else if (file.length() < 10000) {
             // Delete empty files
             file.delete()
+            downloaded = false
+        } else {
+            downloaded = false
         }
         //Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Doesn't Exist")
     }

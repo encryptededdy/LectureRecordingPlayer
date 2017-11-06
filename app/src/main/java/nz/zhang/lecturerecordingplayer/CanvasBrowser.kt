@@ -3,17 +3,14 @@ package nz.zhang.lecturerecordingplayer
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
-import android.webkit.WebViewClient
-
-import kotlinx.android.synthetic.main.activity_canvas_browser.*
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_canvas_browser.*
 import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
@@ -36,10 +33,13 @@ class CanvasBrowser : AppCompatActivity() {
         webview.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
                 // Inject JS to read the source of the site
-                webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+                webview.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');")
                 super.onPageFinished(view, url)
             }
         }
+        webview.settings.setSupportZoom(true)
+        webview.settings.builtInZoomControls = true
+        webview.settings.displayZoomControls = false
         webview.addJavascriptInterface(CanvasPageProcessor(), "HTMLOUT")
         webview.settings.javaScriptEnabled = true
         webview.loadUrl(CANVAS_URL)
