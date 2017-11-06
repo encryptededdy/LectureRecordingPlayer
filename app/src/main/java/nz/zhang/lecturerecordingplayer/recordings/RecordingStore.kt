@@ -12,7 +12,7 @@ object RecordingStore {
     lateinit var sharedPrefs: SharedPreferences
 
     fun add(recording: Recording): Boolean {
-        return if (!recordings.contains(recording)) {
+        return if (!recordings.contains(recording) && recording.isValid) {
             recordings.add(recording)
             // write to prefs
             val editor = sharedPrefs.edit()

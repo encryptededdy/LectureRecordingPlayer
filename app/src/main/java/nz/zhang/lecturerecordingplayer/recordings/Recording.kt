@@ -8,7 +8,9 @@ import com.tonyodev.fetch.Fetch
 import com.tonyodev.fetch.listener.FetchListener
 import com.tonyodev.fetch.request.Request
 import java.io.File
+import java.net.MalformedURLException
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -39,6 +41,8 @@ class Recording(val url: String) : Comparable<Recording> {
     @Transient var downloading = false
     @Transient var downloaded = false
 
+    @Transient var isValid = true // whether the recording is a valid url
+
     @Transient var dlProgress = 0
     @Transient var dlError = false
 
@@ -65,7 +69,12 @@ class Recording(val url: String) : Comparable<Recording> {
             urlNoExtension = extensionless
             semesterNumber = semester
             recordingDate = dateFormat.parse(time)
+            isValid = true
+            if (recordingDate.after(Date())) // If it's later than right now, then that's broken
+                isValid = false
         } else {
+            Log.e("BadURL", url)
+            isValid = false
             courseName = "Not found"; courseStream = "Not found"; urlNoExtension = "Not found"; courseNumber = "Not found"; recordingDate = Date(); semesterNumber = "0000"
         }
 

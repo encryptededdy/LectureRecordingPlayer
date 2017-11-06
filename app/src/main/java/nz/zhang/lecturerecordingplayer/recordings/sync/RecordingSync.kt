@@ -11,7 +11,7 @@ import retrofit2.Response
 
 const val API_ROOT_URL = "https://canvasvideoenhancer.azurewebsites.net/"
 
-class RecordingSync : Callback<List<CanvasVideoEnhancerRecording>> {
+class RecordingSync(private val listener: SyncCallback) : Callback<List<CanvasVideoEnhancerRecording>> {
     var downloadedRecordings = ArrayList<CanvasVideoEnhancerRecording>()
     var callsMade = 0
     val courses:List<Course>
@@ -52,11 +52,15 @@ class RecordingSync : Callback<List<CanvasVideoEnhancerRecording>> {
         if (callsMade == courses.size) {
             System.out.println("Recieved all callbacks!")
             // All playlists downloaded! Now convert to recording and add them
+            var newRecordings = 0
             downloadedRecordings.forEach { cveRecording: CanvasVideoEnhancerRecording ->
                 if (cveRecording.isValid()) {
-                    RecordingStore.add(cveRecording.toRecording())
+                    if (RecordingStore.add(cveRecording.toRecording()))
+                        newRecordings++
                 }
             }
+            // Update the listener
+            listener.update(newRecordings)
             System.out.println("Conversion complete!")
         }
     }
