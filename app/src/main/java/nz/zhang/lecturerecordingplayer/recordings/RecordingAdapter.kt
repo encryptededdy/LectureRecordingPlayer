@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_recording.view.*
 import nz.zhang.lecturerecordingplayer.R
@@ -30,7 +29,8 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
         recordings.forEachIndexed {index:Int, recording:Recording ->
             recording.addListener(object : RecordingStatusListener {
                 override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
-                    notifyItemChanged(index)
+                    val nothing = Unit // hacky way to prevent animation on update
+                    notifyItemChanged(index, nothing)
                 }
             })
         }
@@ -41,7 +41,7 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
         var courseTime: TextView = itemView.courseTime
         var background: ConstraintLayout = itemView.backLayout
         var downloadedIcon: ImageView = itemView.downloadedIcon
-        var downloadProgress: ProgressBar = itemView.downloadProgress
+        var downloadProgress: TextView = itemView.downloadProgress
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingAdapter.ViewHolder {
@@ -75,7 +75,7 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
             recording.downloading -> {
                 viewHolder.downloadedIcon.visibility = View.INVISIBLE
                 viewHolder.downloadProgress.visibility = View.VISIBLE
-                viewHolder.downloadProgress.progress = recording.dlProgress
+                viewHolder.downloadProgress.text = "${recording.dlProgress}%"
             }
             recording.downloaded -> {
                 viewHolder.downloadedIcon.visibility = View.VISIBLE
