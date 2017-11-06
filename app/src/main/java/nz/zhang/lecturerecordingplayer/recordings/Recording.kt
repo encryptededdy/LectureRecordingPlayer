@@ -22,18 +22,21 @@ const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.mp3|-slides\\.m4v
 const val TIME_REGEX: String = "(?<=(\\/))\\d{12}(?=(\\.))"
 
 class Recording(val url: String) : Comparable<Recording> {
-    lateinit var courseName: String
-    lateinit var courseNumber: String
-    lateinit var courseStream: String
+    var courseName: String
+    var courseNumber: String
+    var courseStream: String
 
-    lateinit var urlNoExtension: String
+    var urlNoExtension: String
 
-    private var statusListeners: ArrayList<RecordingStatusListener> = ArrayList()
+    @Transient private val statusListeners: ArrayList<RecordingStatusListener> = ArrayList()
 
     var downloading = false
     var downloaded = false
 
-    var downloadID: Long = -1
+    @Transient var dlProgress = 0
+    @Transient var dlError = false
+
+    @Transient var downloadID: Long = -1
 
     var recordingDate: Date = Date()
 
@@ -57,9 +60,11 @@ class Recording(val url: String) : Comparable<Recording> {
             urlNoExtension = extensionless
             recordingDate = dateFormat.parse(time)
         } else {
-            courseName = "Not found"; courseName = "Not found"; courseStream = "Not found"; urlNoExtension = "Not found"
+            courseName = "Not found"; courseName = "Not found"; courseStream = "Not found"; urlNoExtension = "Not found"; courseNumber = "Not found"
         }
     }
+
+    private constructor() : this("")
 
     @SuppressLint("SimpleDateFormat")
     override fun toString(): String {
@@ -69,10 +74,11 @@ class Recording(val url: String) : Comparable<Recording> {
 
     fun addListener(listener: RecordingStatusListener) {
         statusListeners.add(listener)
+        sendUpdate()
     }
 
-    private fun sendUpdate(progress: Int, error: Boolean) {
-        for (listener: RecordingStatusListener in statusListeners) listener.update(downloading, downloaded, progress, error)
+    private fun sendUpdate() {
+        for (listener: RecordingStatusListener in statusListeners) listener.update(downloading, downloaded, dlProgress, dlError)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -121,11 +127,15 @@ class Recording(val url: String) : Comparable<Recording> {
         if (downloadID != Fetch.ENQUEUE_ERROR_ID.toLong()) {
             // Download started successfully
             downloading = true
-            sendUpdate(0, false)
+            dlError = false
+            dlProgress = 0
+            sendUpdate()
         } else {
             // Error, so delete the file if any.
             File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4").delete()
-            sendUpdate(0, true)
+            dlError = true
+            dlProgress = 0
+            sendUpdate()
         }
         fetch.addFetchListener(object : FetchListener {
             override fun onUpdate(id: Long, status: Int, progress: Int, downloadedBytes: Long, fileSize: Long, error: Int) {
@@ -135,13 +145,18 @@ class Recording(val url: String) : Comparable<Recording> {
                         downloading = false
                         // Delete error file if it exists
                         File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4").delete()
-                        sendUpdate(progress, true)
+                        dlProgress = progress
+                        dlError = true
+                        sendUpdate()
                     } else if (status == Fetch.STATUS_DOWNLOADING) {
-                        sendUpdate(progress, false)
+                        sendUpdate()
+                        dlProgress = progress
+                        dlError = false
                     } else if (status == Fetch.STATUS_DONE) {
                         downloaded = true
                         downloading = false
-                        sendUpdate(100, false)
+                        dlError = false
+                        sendUpdate()
                     }
                 }
             }

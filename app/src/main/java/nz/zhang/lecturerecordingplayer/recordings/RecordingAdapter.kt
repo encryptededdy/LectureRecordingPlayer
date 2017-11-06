@@ -11,12 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
-import nz.zhang.lecturerecordingplayer.R
 import android.widget.TextView
-import android.widget.Toast
-import kotlinx.android.synthetic.main.activity_recording_view.*
 import kotlinx.android.synthetic.main.item_recording.view.*
-import nz.zhang.lecturerecordingplayer.R.id.*
+import nz.zhang.lecturerecordingplayer.R
 import nz.zhang.lecturerecordingplayer.RecordingViewActivity
 import java.text.DateFormat
 import java.util.*
@@ -28,20 +25,23 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
 
     init {
         setHasStableIds(true)
+
+        // Add listener for status updates to the recording
+        recordings.forEachIndexed {index:Int, recording:Recording ->
+            recording.addListener(object : RecordingStatusListener {
+                override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
+                    notifyItemChanged(index)
+                }
+            })
+        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        lateinit var courseName: TextView
-        lateinit var courseTime: TextView
-        lateinit var background: ConstraintLayout
-        lateinit var downloadedIcon: ImageView
-
-        init {
-            courseName = itemView.courseName
-            courseTime = itemView.courseTime
-            background = itemView.backLayout
-            downloadedIcon = itemView.downloadedIcon
-        }
+        var courseName: TextView = itemView.courseName
+        var courseTime: TextView = itemView.courseTime
+        var background: ConstraintLayout = itemView.backLayout
+        var downloadedIcon: ImageView = itemView.downloadedIcon
+        var downloadProgress: ProgressBar = itemView.downloadProgress
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingAdapter.ViewHolder {
@@ -65,14 +65,27 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
                 startActivity(viewHolder.background.context, recordingIntent, recordingIntent.extras)
             }
         })
-        if (recording.downloaded) {
-            viewHolder.downloadedIcon.visibility = View.VISIBLE
-        } else {
-            viewHolder.downloadedIcon.visibility = View.INVISIBLE
+
+        when {
+            recording.dlError -> {
+                // just hide everything
+                viewHolder.downloadProgress.visibility = View.INVISIBLE
+                viewHolder.downloadedIcon.visibility = View.INVISIBLE
+            }
+            recording.downloading -> {
+                viewHolder.downloadedIcon.visibility = View.INVISIBLE
+                viewHolder.downloadProgress.visibility = View.VISIBLE
+                viewHolder.downloadProgress.progress = recording.dlProgress
+            }
+            recording.downloaded -> {
+                viewHolder.downloadedIcon.visibility = View.VISIBLE
+                viewHolder.downloadProgress.visibility = View.INVISIBLE
+            }
         }
+
         // Set item views
         viewHolder.courseName.text = "${recording.courseName} ${recording.courseNumber}"
-        val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault());
+        val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         viewHolder.courseTime.text = df.format(recording.recordingDate)
     }
 

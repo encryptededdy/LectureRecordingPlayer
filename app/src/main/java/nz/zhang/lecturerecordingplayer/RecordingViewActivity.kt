@@ -86,16 +86,6 @@ class RecordingViewActivity : AppCompatActivity() {
         courseName.text = "${recording.courseName} ${recording.courseNumber} ${recording.courseStream}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         courseTime.text = df.format(recording.recordingDate)
-        // Set button statuses
-        if (recording.downloading) {
-            downloadButton.text = getString(R.string.downloading)
-            downloadButton.isEnabled = false
-        }
-        if (recording.downloaded) {
-            downloadButton.text = getString(R.string.downloaded)
-            downloadButton.isEnabled = false
-            playButton.isEnabled = true
-        }
 
         // Listener for download status
         recording.addListener(object : RecordingStatusListener {
@@ -104,11 +94,11 @@ class RecordingViewActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "Download error. You may need to authenticate", Toast.LENGTH_LONG).show()
                     downloadButton.text = getString(R.string.error)
                     downloadButton.isEnabled = true
-                } else if (recording.downloading) {
+                } else if (downloading) {
                     downloadButton.text = getString(R.string.downloading)
                     downloadButton.isEnabled = false
                     progressBar.progress = progress
-                } else if (recording.downloaded) {
+                } else if (downloaded) {
                     downloadButton.text = getString(R.string.downloaded)
                     progressBar.progress = 0
                     downloadButton.isEnabled = false
