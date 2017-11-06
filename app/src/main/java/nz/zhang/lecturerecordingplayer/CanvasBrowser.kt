@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 
 
 const val CANVAS_URL: String = "https://canvas.auckland.ac.nz/"
-const val RECORDING_REGEX: String = "https:\\/\\/mediastore\\.auckland\\.ac\\.nz\\/.{0,100}\\.preview"
+const val RECORDING_REGEX: String = "https:\\/\\/mediastore\\.auckland\\.ac\\.nz\\/.{0,100}(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slides\\.m4v)"
 
 class CanvasBrowser : AppCompatActivity() {
 

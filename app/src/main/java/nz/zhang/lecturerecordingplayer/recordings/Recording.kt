@@ -16,17 +16,22 @@ import kotlin.collections.ArrayList
 const val COURSENAME_REGEX: String = "(?<=(/))[A-Z]{4,8}(?=(\\d{3}\\w{4,5}/))"
 const val COURSENUMBER_REGEX: String = "(?<=(/[A-Z]{4,8}))\\d{3}(?=(\\w{4,5}/))"
 const val COURSESTREAM_REGEX: String = "(?<=(/[A-Z]{4,8}\\d{3}))\\w{4,5}(?=(/))"
+const val SEMESTERNUMBER_REGEX: String = "(?<=(\\/))\\d{4}(?=(\\/[A-Z]{4,8}\\d{3}\\w{4,5}\\/))"
 
-const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.mp3|-slides\\.m4v)\$"
+const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slides\\.m4v)\$"
 
 const val TIME_REGEX: String = "(?<=(\\/))\\d{12}(?=(\\.))"
 
 class Recording(val url: String) : Comparable<Recording> {
-    var courseName: String
-    var courseNumber: String
-    var courseStream: String
+    val courseName: String
+    val courseNumber: String
+    val courseStream: String
 
-    var urlNoExtension: String
+    val semesterNumber: String
+
+    val recordingDate: Date
+
+    val urlNoExtension: String
 
     @Transient private val statusListeners: ArrayList<RecordingStatusListener> = ArrayList()
 
@@ -38,8 +43,6 @@ class Recording(val url: String) : Comparable<Recording> {
 
     @Transient var downloadID: Long = -1
 
-    var recordingDate: Date = Date()
-
     init {
         // Example: 201707281200
         val dateFormat = SimpleDateFormat("yyyyMMddHHmm", Locale.getDefault())
@@ -47,20 +50,22 @@ class Recording(val url: String) : Comparable<Recording> {
         val name = COURSENAME_REGEX.toRegex().find(url)?.value
         val number = COURSENUMBER_REGEX.toRegex().find(url)?.value
         val stream = COURSESTREAM_REGEX.toRegex().find(url)?.value
+        val semester = SEMESTERNUMBER_REGEX.toRegex().find(url)?.value
 
         val extensionless = FILEEXTENSION_REGEX.toRegex().replace(url, "")
 
         val time = TIME_REGEX.toRegex().find(url)?.value
 
-        if (name != null && number != null && stream != null && time != null) {
+        if (name != null && number != null && stream != null && time != null && semester != null) {
             Log.d("foundName", name)
             courseName = name
             courseNumber = number
             courseStream = stream
             urlNoExtension = extensionless
+            semesterNumber = semester
             recordingDate = dateFormat.parse(time)
         } else {
-            courseName = "Not found"; courseName = "Not found"; courseStream = "Not found"; urlNoExtension = "Not found"; courseNumber = "Not found"
+            courseName = "Not found"; courseStream = "Not found"; urlNoExtension = "Not found"; courseNumber = "Not found"; recordingDate = Date(); semesterNumber = "0000"
         }
     }
 

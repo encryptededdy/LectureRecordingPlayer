@@ -9,6 +9,7 @@ import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_recording_list.*
 import nz.zhang.lecturerecordingplayer.recordings.RecordingAdapter
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
+import nz.zhang.lecturerecordingplayer.recordings.sync.RecordingSync
 
 
 class RecordingListActivity : AppCompatActivity() {
@@ -18,7 +19,7 @@ class RecordingListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_recording_list)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val adapter = RecordingAdapter(this, RecordingStore.recordings)
+        val adapter = RecordingAdapter(this, RecordingStore.recordings.descendingSet().toList()) // descending for latest first
         recordingListRecycler.adapter = adapter
         recordingListRecycler.layoutManager = LinearLayoutManager(this)
     }
@@ -32,8 +33,8 @@ class RecordingListActivity : AppCompatActivity() {
 
     // handle menu button activities
     override fun onOptionsItemSelected(item: MenuItem) : Boolean {
-        return when {
-            item.itemId == R.id.sync_recordings -> {
+        return when (item.itemId) {
+            R.id.sync_recordings -> {
                 // sync recordings with server
                 AlertDialog.Builder(this)
                         .setTitle(getString(R.string.sync_title))
@@ -41,12 +42,13 @@ class RecordingListActivity : AppCompatActivity() {
                         .setIcon(R.drawable.ic_sync_white_24dp)
                         .setPositiveButton(getString(R.string.sync)) { p0, p1 -> run {
                             // todo: the actual sync
+                            RecordingSync().sync()
                         } }
                         .setNegativeButton(android.R.string.no, null)
                         .show()
                 true
             }
-            item.itemId == android.R.id.home -> {
+            android.R.id.home -> {
                 onBackPressed()
                 true
             }

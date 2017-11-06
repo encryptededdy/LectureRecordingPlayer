@@ -42,20 +42,22 @@ class RecordingViewActivity : AppCompatActivity() {
         downloadWebView.visibility = View.GONE
         downloadWebView.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
-                if (view?.title.equals("Media preview - The University of Auckland")) {
-                    // OK we're authenticated - let's start the download
-                    downloadWebView.visibility = View.GONE
-                    cookies = CookieManager.getInstance().getCookie(url)
-                    recording.downloadRecording(applicationContext, cookies)
-                } else if (view?.title.equals("User dashboard")) {
-                    // Loaded CANVAS! Now let's load the media page
-                    //downloadWebView.visibility = View.GONE
-                    downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
-                } else {
-                    // Oh no, we've been redirected - need to get the user to authenticate
-                    downloadWebView.visibility = View.VISIBLE
-                    Toast.makeText(applicationContext, "Please log in to download", Toast.LENGTH_LONG).show()
-                    Log.d("LoadedPage", view?.url)
+                when {
+                    view?.title.equals("Media preview - The University of Auckland") -> {
+                        // OK we're authenticated - let's start the download
+                        downloadWebView.visibility = View.GONE
+                        cookies = CookieManager.getInstance().getCookie(url)
+                        recording.downloadRecording(applicationContext, cookies)
+                    }
+                    view?.title.equals("User dashboard") -> // Loaded CANVAS! Now let's load the media page
+                        //downloadWebView.visibility = View.GONE
+                        downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
+                    else -> {
+                        // Oh no, we've been redirected - need to get the user to authenticate
+                        downloadWebView.visibility = View.VISIBLE
+                        Toast.makeText(applicationContext, "Please log in to download", Toast.LENGTH_LONG).show()
+                        Log.d("LoadedPage", view?.url)
+                    }
                 }
                 super.onPageFinished(view, url)
             }
@@ -83,7 +85,7 @@ class RecordingViewActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n") // Course names shouldn't need to be translated
     fun populateRecording() {
-        recording = RecordingStore.recordings.get(intent.getIntExtra(RECORDING_ID, 0))
+        recording = RecordingStore.recordings.toList().get(intent.getIntExtra(RECORDING_ID, 0))
         courseName.text = "${recording.courseName} ${recording.courseNumber} ${recording.courseStream}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         courseTime.text = df.format(recording.recordingDate)
