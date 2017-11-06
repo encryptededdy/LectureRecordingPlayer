@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.webkit.CookieManager
 import android.webkit.SslErrorHandler
@@ -66,6 +67,16 @@ class RecordingViewActivity : AppCompatActivity() {
         }
         downloadWebView.settings.javaScriptEnabled = true
         populateRecording()
+    }
+
+    // Handle back button functionality
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return if (item?.itemId == android.R.id.home) {
+            onBackPressed()
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 
 
