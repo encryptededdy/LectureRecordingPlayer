@@ -81,6 +81,10 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
                 viewHolder.downloadedIcon.visibility = View.VISIBLE
                 viewHolder.downloadProgress.visibility = View.INVISIBLE
             }
+            else -> {
+                viewHolder.downloadProgress.visibility = View.INVISIBLE
+                viewHolder.downloadedIcon.visibility = View.INVISIBLE
+            }
         }
 
         // Set item views

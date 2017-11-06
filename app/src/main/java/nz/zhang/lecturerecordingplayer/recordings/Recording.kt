@@ -101,6 +101,11 @@ class Recording(val url: String) : Comparable<Recording> {
         return File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4")
     }
 
+    fun delete() {
+        if (getFile().delete()) downloaded = false
+        sendUpdate()
+    }
+
     fun checkFS() {
         val file = getFile()
         if (file.isFile && file.length() > 10000) {

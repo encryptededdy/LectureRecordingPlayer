@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
 import android.support.v4.content.FileProvider
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
@@ -90,29 +91,51 @@ class RecordingViewActivity : AppCompatActivity() {
         // Listener for download status
         recording.addListener(object : RecordingStatusListener {
             override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
-                if (error) {
-                    Toast.makeText(applicationContext, "Download error. You may need to authenticate", Toast.LENGTH_LONG).show()
-                    downloadButton.text = getString(R.string.error)
-                    downloadButton.isEnabled = true
-                } else if (downloading) {
-                    downloadButton.text = getString(R.string.downloading)
-                    downloadButton.isEnabled = false
-                    progressBar.progress = progress
-                } else if (downloaded) {
-                    downloadButton.text = getString(R.string.downloaded)
-                    progressBar.progress = 0
-                    downloadButton.isEnabled = false
-                    playButton.isEnabled = true
+                when {
+                    error -> {
+                        Toast.makeText(applicationContext, "Download error. You may need to authenticate", Toast.LENGTH_LONG).show()
+                        downloadButton.text = getString(R.string.error)
+                        downloadButton.isEnabled = true
+                    }
+                    downloading -> {
+                        downloadButton.text = getString(R.string.downloading)
+                        downloadButton.isEnabled = false
+                        progressBar.progress = progress
+                    }
+                    downloaded -> {
+                        downloadButton.text = getString(R.string.delete)
+                        progressBar.progress = 0
+                        downloadButton.isEnabled = true
+                        playButton.isEnabled = true
+                    }
+                    else -> {
+                        downloadButton.text = getString(R.string.download)
+                        progressBar.progress = 0
+                        downloadButton.isEnabled = true
+                        playButton.isEnabled = false
+                    }
                 }
             }
         })
     }
 
     fun loadRecording(view: View) {
-        downloadButton.text = getString(R.string.starting)
-        downloadButton.isEnabled = false
-        Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
-        downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
+        if (recording.downloaded) {
+            // Delete
+            AlertDialog.Builder(this)
+                    .setTitle("Delete Recording")
+                    .setMessage("Are you sure you want to delete this recording?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(R.string.delete) { p0, p1 -> recording.delete()}
+                    .setNegativeButton(android.R.string.no, null)
+                    .show()
+        } else {
+            // Download
+            downloadButton.text = getString(R.string.starting)
+            downloadButton.isEnabled = false
+            Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
+            downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
+        }
     }
 
     fun playRecording(view: View) {
