@@ -11,7 +11,7 @@ Android Lecture Recording Player/Manager for the University of Auckland. My firs
 * Streaming
 * Custom recording player (gain, speed controls)
 ## Screenshots
-![list](https://i.imgur.com/O6E5IQi.png)
+![list](https://i.imgur.com/c4r9tJX.png)
 ![browser](https://i.imgur.com/8CF0Dru.png)
 ![download](https://i.imgur.com/SKiqHSl.png)
 ![playback](https://i.imgur.com/l8pZ9Bp.png)
