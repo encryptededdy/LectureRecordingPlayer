@@ -32,6 +32,7 @@ class RecordingSync : Callback<List<CanvasVideoEnhancerRecording>> {
                 .build()
         val cveService = retrofit.create(CanvasVideoEnhancerService::class.java)
         courses.forEach { course: Course ->
+            System.out.println("Sending request for "+course.course)
             val call = cveService.getPlaylist(course.course, course.semesterCode)
             call.enqueue(this)
         }
@@ -42,13 +43,21 @@ class RecordingSync : Callback<List<CanvasVideoEnhancerRecording>> {
         callsMade++
         val recordingList:List<CanvasVideoEnhancerRecording>? = response.body()
         if (response.isSuccessful && recordingList != null) {
+            System.out.println("Got callback for "+recordingList)
             downloadedRecordings.addAll(recordingList)
         } else {
             System.out.println(response.errorBody())
         }
 
         if (callsMade == courses.size) {
-            // All playlists downloaded!
+            System.out.println("Recieved all callbacks!")
+            // All playlists downloaded! Now convert to recording and add them
+            downloadedRecordings.forEach { cveRecording: CanvasVideoEnhancerRecording ->
+                if (cveRecording.isValid()) {
+                    RecordingStore.add(cveRecording.toRecording())
+                }
+            }
+            System.out.println("Conversion complete!")
         }
     }
 

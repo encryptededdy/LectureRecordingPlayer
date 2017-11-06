@@ -18,6 +18,8 @@ const val COURSENUMBER_REGEX: String = "(?<=(/[A-Z]{4,8}))\\d{3}(?=(\\w{4,5}/))"
 const val COURSESTREAM_REGEX: String = "(?<=(/[A-Z]{4,8}\\d{3}))\\w{4,5}(?=(/))"
 const val SEMESTERNUMBER_REGEX: String = "(?<=(\\/))\\d{4}(?=(\\/[A-Z]{4,8}\\d{3}\\w{4,5}\\/))"
 
+const val SUFFIX_REGEX: String = "(?<=(\\/\\d{12}\\.LT\\d{6}\\.))\\w*"
+
 const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slides\\.m4v)\$"
 
 const val TIME_REGEX: String = "(?<=(\\/))\\d{12}(?=(\\.))"
@@ -26,10 +28,9 @@ class Recording(val url: String) : Comparable<Recording> {
     val courseName: String
     val courseNumber: String
     val courseStream: String
-
     val semesterNumber: String
-
     val recordingDate: Date
+    val recordingSuffix: String
 
     val urlNoExtension: String
 
@@ -67,14 +68,17 @@ class Recording(val url: String) : Comparable<Recording> {
         } else {
             courseName = "Not found"; courseStream = "Not found"; urlNoExtension = "Not found"; courseNumber = "Not found"; recordingDate = Date(); semesterNumber = "0000"
         }
+
+        recordingSuffix = SUFFIX_REGEX.toRegex().find(url)?.value ?: ""
     }
 
+    // Used for GSON reasons
     private constructor() : this("")
 
     @SuppressLint("SimpleDateFormat")
     override fun toString(): String {
         val df = SimpleDateFormat("YYYY-MM-dd_HHmm")
-        return "${courseName}_${courseNumber}_${df.format(recordingDate)}"
+        return "${courseName}_${courseNumber}_${df.format(recordingDate)}$recordingSuffix"
     }
 
     fun addListener(listener: RecordingStatusListener) {
