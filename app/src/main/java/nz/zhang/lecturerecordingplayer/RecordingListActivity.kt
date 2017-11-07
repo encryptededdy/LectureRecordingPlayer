@@ -16,14 +16,23 @@ import nz.zhang.lecturerecordingplayer.recordings.sync.SyncComplete
 
 class RecordingListActivity : AppCompatActivity() {
 
-    lateinit var filterDialog:MaterialDialog
-    var filteredRecordings = RecordingStore.recordings.descendingSet().toList() as ArrayList
+    private lateinit var filterDialog:MaterialDialog
+    private lateinit var filteredRecordings:ArrayList<Recording>
+
+    private fun loadAllRecordings() {
+        filteredRecordings = if (!RecordingStore.recordings.isEmpty()){
+            RecordingStore.recordings.descendingSet().toList() as ArrayList
+        } else {
+            ArrayList()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recording_list)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         recordingListRecycler.layoutManager = LinearLayoutManager(this)
+        loadAllRecordings()
         populateRecordings()
         // Build the dialog for filtering the list
         filterDialog = MaterialDialog.Builder(this)
@@ -31,11 +40,9 @@ class RecordingListActivity : AppCompatActivity() {
                 .items(RecordingStore.courseList())
                 .itemsCallbackMultiChoice(null) { _, _, text ->
                     filteredRecordings.clear()
-                    RecordingStore.recordings.descendingSet().toList().forEach { recording:Recording ->
-                        if (text != null && text.contains(recording.niceName())) {
-                            filteredRecordings.add(recording)
-                        }
-                    }
+                    RecordingStore.recordings.descendingSet().toList().forEach({ recording: Recording ->
+                        if (text != null && text.contains(recording.niceName())) filteredRecordings.add(recording)
+                    })
                     populateRecordings()
                     true
                 }
@@ -78,7 +85,9 @@ class RecordingListActivity : AppCompatActivity() {
                                 override fun update(newRecordings: Int) {
                                     // On sync success
                                     progressDialog.dismiss()
+                                    loadAllRecordings()
                                     populateRecordings()
+                                    filterDialog.selectAllIndices()
                                     MaterialDialog.Builder(parentContext)
                                             .content("Synced $newRecordings new recordings from the server")
                                             .cancelable(false)
