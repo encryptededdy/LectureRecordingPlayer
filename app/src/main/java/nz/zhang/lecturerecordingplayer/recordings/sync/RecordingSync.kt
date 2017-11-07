@@ -1,23 +1,40 @@
 package nz.zhang.lecturerecordingplayer.recordings.sync
 
+import android.util.Log
 import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
+import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.Call
-import retrofit2.Response
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 
 const val API_ROOT_URL = "https://canvasvideoenhancer.azurewebsites.net/"
 
-class RecordingSync(private val listener: SyncCallback) : Callback<List<CanvasVideoEnhancerRecording>> {
+class RecordingSync(private val listener: SyncComplete) : Callback<List<CanvasVideoEnhancerRecording>> {
     var downloadedRecordings = ArrayList<CanvasVideoEnhancerRecording>()
     var callsMade = 0
     val courses:List<Course>
 
     init {
         courses = populateCourses()
+    }
+
+    companion object {
+        // Upload recording to the server
+        fun uploadRecording(recording: Recording) {
+            val retrofit = Retrofit.Builder()
+                    .baseUrl(API_ROOT_URL)
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .build()
+            val cveService = retrofit.create(CanvasVideoEnhancerService::class.java)
+            val urlToUpload = recording.urlNoExtension.replace("^https?:\\/\\/.+?\\/".toRegex(), "")
+            val call = cveService.uploadRecording("{\"url\": \"$urlToUpload\"}")
+            Log.d("UploadRec", "Uploading recording $urlToUpload")
+            call.enqueue(EmptyCallback())
+        }
     }
 
     fun sync() {
@@ -50,7 +67,7 @@ class RecordingSync(private val listener: SyncCallback) : Callback<List<CanvasVi
         }
 
         if (callsMade == courses.size) {
-            System.out.println("Recieved all callbacks!")
+            System.out.println("Received all callbacks!")
             // All playlists downloaded! Now convert to recording and add them
             var newRecordings = 0
             downloadedRecordings.forEach { cveRecording: CanvasVideoEnhancerRecording ->
@@ -79,3 +96,15 @@ class RecordingSync(private val listener: SyncCallback) : Callback<List<CanvasVi
 }
 
 data class Course(val course: String, val semesterCode: String)
+
+class EmptyCallback<T> : Callback<T> {
+    override fun onFailure(call: Call<T>?, t: Throwable?) {
+        // do nothing
+        Log.e("UploadFail", "Upload of recording to server failed")
+    }
+
+    override fun onResponse(call: Call<T>?, response: Response<T>?) {
+        // do nothing
+    }
+
+}

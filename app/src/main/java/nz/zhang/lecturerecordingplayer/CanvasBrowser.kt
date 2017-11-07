@@ -12,6 +12,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_canvas_browser.*
 import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
+import nz.zhang.lecturerecordingplayer.recordings.sync.RecordingSync
 import java.util.regex.Pattern
 
 
@@ -61,8 +62,11 @@ class CanvasBrowser : AppCompatActivity() {
                 .matcher(currentPageSrc)
         var recordingsAdded = 0
         while (m.find()) {
-            if (RecordingStore.add(Recording(m.group())))
+            val recording = Recording(m.group())
+            if (RecordingStore.add(recording)) {
                 recordingsAdded++
+                RecordingSync.uploadRecording(recording)
+            }
             //Log.d("readURL", m.group())
         }
         if (recordingsAdded == 0) {

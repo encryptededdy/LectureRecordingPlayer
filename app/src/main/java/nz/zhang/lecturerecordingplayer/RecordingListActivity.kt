@@ -1,5 +1,6 @@
 package nz.zhang.lecturerecordingplayer
 
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -10,8 +11,7 @@ import kotlinx.android.synthetic.main.activity_recording_list.*
 import nz.zhang.lecturerecordingplayer.recordings.RecordingAdapter
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 import nz.zhang.lecturerecordingplayer.recordings.sync.RecordingSync
-import android.app.ProgressDialog
-import nz.zhang.lecturerecordingplayer.recordings.sync.SyncCallback
+import nz.zhang.lecturerecordingplayer.recordings.sync.SyncComplete
 
 
 class RecordingListActivity : AppCompatActivity() {
@@ -48,7 +48,7 @@ class RecordingListActivity : AppCompatActivity() {
                         .setPositiveButton(getString(R.string.sync)) { _, _ -> run {
                             val dialog = ProgressDialog.show(parentContext, "",
                                     "Syncing from server", true)
-                            RecordingSync(object : SyncCallback {
+                            RecordingSync(object : SyncComplete {
                                 override fun update(newRecordings: Int) {
                                     // On sync success
                                     dialog.dismiss()
