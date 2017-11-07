@@ -17,4 +17,6 @@
     <string name="download_error">Download error. You may need to authenticate</string>
     <string name="sync_body">This will sync missing recordings for your courses from the server. Only links (not video files) will be downloaded.</string>
     <string name="sync_title">Sync Recording List</string>
+    <string name="synctext">Syncing recordings from server…</string>
+    <string name="pleasewait">Please wait</string>
 </resources>

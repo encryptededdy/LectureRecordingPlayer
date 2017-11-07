@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
 import android.support.v4.content.FileProvider
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
@@ -15,6 +14,7 @@ import android.webkit.SslErrorHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import com.afollestad.materialdialogs.MaterialDialog
 import kotlinx.android.synthetic.main.activity_recording_view.*
 import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStatusListener
@@ -124,12 +124,13 @@ class RecordingViewActivity : AppCompatActivity() {
     fun loadRecording(view: View) {
         if (recording.downloaded) {
             // Delete
-            AlertDialog.Builder(this)
-                    .setTitle(getString(R.string.delete_title))
-                    .setMessage(getString(R.string.delete_body))
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(R.string.delete) { p0, p1 -> recording.delete()}
-                    .setNegativeButton(android.R.string.no, null)
+            MaterialDialog.Builder(this)
+                    .title(getString(R.string.delete_title))
+                    .content(getString(R.string.delete_body))
+                    .icon(getDrawable(R.drawable.ic_delete_white_24dp))
+                    .positiveText(R.string.delete)
+                    .onPositive {_, _ -> recording.delete()}
+                    .negativeText(android.R.string.no)
                     .show()
         } else {
             // Download
