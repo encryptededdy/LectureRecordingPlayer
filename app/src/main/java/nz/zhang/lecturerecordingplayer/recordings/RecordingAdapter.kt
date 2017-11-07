@@ -18,9 +18,7 @@ import java.text.DateFormat
 import java.util.*
 
 
-class RecordingAdapter(context: Context, recordingsList: List<Recording>) : RecyclerView.Adapter<RecordingAdapter.ViewHolder>() {
-
-    var recordings = recordingsList
+class RecordingAdapter(context: Context, var recordings: List<Recording>) : RecyclerView.Adapter<RecordingAdapter.ViewHolder>() {
 
     init {
         setHasStableIds(true)

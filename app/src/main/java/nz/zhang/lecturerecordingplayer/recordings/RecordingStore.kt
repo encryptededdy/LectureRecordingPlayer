@@ -35,4 +35,12 @@ object RecordingStore {
         }
         // Otherwise, just stick with the empty array
     }
+
+    // Gets courses
+    fun courseList() : List<Course> {
+        val uniqueCourses = HashSet<Course>()
+        recordings.forEach { recording: Recording ->
+            uniqueCourses.add(Course(recording.courseName + recording.courseNumber + recording.courseStream, recording.semesterNumber, "${recording.courseName} ${recording.courseNumber}"))}
+        return uniqueCourses.toList()
+    }
 }

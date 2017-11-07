@@ -15,18 +15,19 @@ import nz.zhang.lecturerecordingplayer.recordings.sync.SyncComplete
 
 class RecordingListActivity : AppCompatActivity() {
 
-    lateinit var adapter:RecordingAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recording_list)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        adapter = RecordingAdapter(this, RecordingStore.recordings.descendingSet().toList()) // descending for latest first
-        recordingListRecycler.adapter = adapter
         recordingListRecycler.layoutManager = LinearLayoutManager(this)
+        populateRecordings()
     }
 
+    private fun populateRecordings() {
+        val adapter = RecordingAdapter(this, RecordingStore.recordings.descendingSet().toList())
+        recordingListRecycler.adapter = adapter
+        recordingListRecycler.invalidate()
+    }
 
     // Handle custom menu bar
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,9 +57,7 @@ class RecordingListActivity : AppCompatActivity() {
                                 override fun update(newRecordings: Int) {
                                     // On sync success
                                     progressDialog.dismiss()
-                                    val adapter = RecordingAdapter(parentContext, RecordingStore.recordings.descendingSet().toList())
-                                    recordingListRecycler.adapter = adapter
-                                    recordingListRecycler.invalidate()
+                                    populateRecordings()
                                     MaterialDialog.Builder(parentContext)
                                             .content("Synced $newRecordings new recordings from the server")
                                             .cancelable(false)

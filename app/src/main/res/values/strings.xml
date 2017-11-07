@@ -19,4 +19,5 @@
     <string name="sync_title">Sync Recording List</string>
     <string name="synctext">Syncing recordings from server…</string>
     <string name="pleasewait">Please wait</string>
+    <string name="play">Play</string>
 </resources>

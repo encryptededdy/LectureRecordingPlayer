@@ -6,8 +6,16 @@
         android:id="@+id/sync_recordings"
         android:icon="@drawable/ic_sync_white_24dp"
         android:iconTint="@android:color/white"
-        android:orderInCategory="100"
+        android:orderInCategory="101"
         android:title="@string/sync"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/filter_recordings"
+        android:icon="@drawable/ic_filter_list_white_24dp"
+        android:iconTint="@android:color/white"
+        android:orderInCategory="102"
+        android:title=""
         app:showAsAction="always" />
 
 </menu>
