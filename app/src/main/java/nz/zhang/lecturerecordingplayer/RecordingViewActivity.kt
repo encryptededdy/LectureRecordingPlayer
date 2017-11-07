@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
 import android.support.v4.content.FileProvider
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
@@ -41,20 +42,22 @@ class RecordingViewActivity : AppCompatActivity() {
         downloadWebView.visibility = View.GONE
         downloadWebView.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
-                if (view?.title.equals("Media preview - The University of Auckland")) {
-                    // OK we're authenticated - let's start the download
-                    downloadWebView.visibility = View.GONE
-                    cookies = CookieManager.getInstance().getCookie(url)
-                    recording.downloadRecording(applicationContext, cookies)
-                } else if (view?.title.equals("User dashboard")) {
-                    // Loaded CANVAS! Now let's load the media page
-                    //downloadWebView.visibility = View.GONE
-                    downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
-                } else {
-                    // Oh no, we've been redirected - need to get the user to authenticate
-                    downloadWebView.visibility = View.VISIBLE
-                    Toast.makeText(applicationContext, "Please log in to download", Toast.LENGTH_LONG).show()
-                    Log.d("LoadedPage", view?.url)
+                when {
+                    view?.title.equals("Media preview - The University of Auckland") -> {
+                        // OK we're authenticated - let's start the download
+                        downloadWebView.visibility = View.GONE
+                        cookies = CookieManager.getInstance().getCookie(url)
+                        recording.downloadRecording(applicationContext, cookies)
+                    }
+                    view?.title.equals("User dashboard") -> // Loaded CANVAS! Now let's load the media page
+                        //downloadWebView.visibility = View.GONE
+                        downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
+                    else -> {
+                        // Oh no, we've been redirected - need to get the user to authenticate
+                        downloadWebView.visibility = View.VISIBLE
+                        Toast.makeText(applicationContext, "Please log in to download", Toast.LENGTH_LONG).show()
+                        Log.d("LoadedPage", view?.url)
+                    }
                 }
                 super.onPageFinished(view, url)
             }
@@ -82,7 +85,7 @@ class RecordingViewActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n") // Course names shouldn't need to be translated
     fun populateRecording() {
-        recording = RecordingStore.recordings.get(intent.getIntExtra(RECORDING_ID, 0))
+        recording = RecordingStore.recordings.toList().asReversed().get(intent.getIntExtra(RECORDING_ID, 0))
         courseName.text = "${recording.courseName} ${recording.courseNumber} ${recording.courseStream}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         courseTime.text = df.format(recording.recordingDate)
@@ -90,29 +93,51 @@ class RecordingViewActivity : AppCompatActivity() {
         // Listener for download status
         recording.addListener(object : RecordingStatusListener {
             override fun update(downloading: Boolean, downloaded: Boolean, progress: Int, error: Boolean) {
-                if (error) {
-                    Toast.makeText(applicationContext, "Download error. You may need to authenticate", Toast.LENGTH_LONG).show()
-                    downloadButton.text = getString(R.string.error)
-                    downloadButton.isEnabled = true
-                } else if (downloading) {
-                    downloadButton.text = getString(R.string.downloading)
-                    downloadButton.isEnabled = false
-                    progressBar.progress = progress
-                } else if (downloaded) {
-                    downloadButton.text = getString(R.string.downloaded)
-                    progressBar.progress = 0
-                    downloadButton.isEnabled = false
-                    playButton.isEnabled = true
+                when {
+                    error -> {
+                        Toast.makeText(applicationContext, getString(R.string.download_error), Toast.LENGTH_LONG).show()
+                        downloadButton.text = getString(R.string.error)
+                        downloadButton.isEnabled = true
+                    }
+                    downloading -> {
+                        downloadButton.text = getString(R.string.downloading)
+                        downloadButton.isEnabled = false
+                        progressBar.progress = progress
+                    }
+                    downloaded -> {
+                        downloadButton.text = getString(R.string.delete)
+                        progressBar.progress = 0
+                        downloadButton.isEnabled = true
+                        playButton.isEnabled = true
+                    }
+                    else -> {
+                        downloadButton.text = getString(R.string.download)
+                        progressBar.progress = 0
+                        downloadButton.isEnabled = true
+                        playButton.isEnabled = false
+                    }
                 }
             }
         })
     }
 
     fun loadRecording(view: View) {
-        downloadButton.text = getString(R.string.starting)
-        downloadButton.isEnabled = false
-        Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
-        downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
+        if (recording.downloaded) {
+            // Delete
+            AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.delete_title))
+                    .setMessage(getString(R.string.delete_body))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(R.string.delete) { p0, p1 -> recording.delete()}
+                    .setNegativeButton(android.R.string.no, null)
+                    .show()
+        } else {
+            // Download
+            downloadButton.text = getString(R.string.starting)
+            downloadButton.isEnabled = false
+            Log.d("WebSource", "Loading: ${recording.urlNoExtension}.preview")
+            downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
+        }
     }
 
     fun playRecording(view: View) {

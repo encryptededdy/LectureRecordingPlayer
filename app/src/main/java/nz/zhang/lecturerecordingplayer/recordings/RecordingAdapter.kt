@@ -20,7 +20,7 @@ import java.util.*
 
 class RecordingAdapter(context: Context, recordingsList: List<Recording>) : RecyclerView.Adapter<RecordingAdapter.ViewHolder>() {
 
-    val recordings = recordingsList
+    var recordings = recordingsList
 
     init {
         setHasStableIds(true)
@@ -81,6 +81,10 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
                 viewHolder.downloadedIcon.visibility = View.VISIBLE
                 viewHolder.downloadProgress.visibility = View.INVISIBLE
             }
+            else -> {
+                viewHolder.downloadProgress.visibility = View.INVISIBLE
+                viewHolder.downloadedIcon.visibility = View.INVISIBLE
+            }
         }
 
         // Set item views
@@ -91,6 +95,10 @@ class RecordingAdapter(context: Context, recordingsList: List<Recording>) : Recy
 
     override fun getItemCount(): Int {
         return recordings.size
+    }
+
+    fun update(new:List<Recording>) {
+        recordings = new
     }
 
     override fun getItemId(position: Int): Long {
