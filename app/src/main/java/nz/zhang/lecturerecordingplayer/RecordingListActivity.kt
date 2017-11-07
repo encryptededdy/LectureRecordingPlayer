@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.afollestad.materialdialogs.MaterialDialog
 import kotlinx.android.synthetic.main.activity_recording_list.*
+import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingAdapter
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 import nz.zhang.lecturerecordingplayer.recordings.sync.RecordingSync
@@ -15,16 +16,36 @@ import nz.zhang.lecturerecordingplayer.recordings.sync.SyncComplete
 
 class RecordingListActivity : AppCompatActivity() {
 
+    lateinit var filterDialog:MaterialDialog
+    var filteredRecordings = RecordingStore.recordings.descendingSet().toList() as ArrayList
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recording_list)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         recordingListRecycler.layoutManager = LinearLayoutManager(this)
         populateRecordings()
+        // Build the dialog for filtering the list
+        filterDialog = MaterialDialog.Builder(this)
+                .title(getString(R.string.filter_title))
+                .items(RecordingStore.courseList())
+                .itemsCallbackMultiChoice(null) { _, _, text ->
+                    filteredRecordings.clear()
+                    RecordingStore.recordings.descendingSet().toList().forEach { recording:Recording ->
+                        if (text != null && text.contains(recording.niceName())) {
+                            filteredRecordings.add(recording)
+                        }
+                    }
+                    populateRecordings()
+                    true
+                }
+                .positiveText(getString(R.string.filter))
+                .build()
+        filterDialog.selectAllIndices() // don't need to send callback
     }
 
     private fun populateRecordings() {
-        val adapter = RecordingAdapter(this, RecordingStore.recordings.descendingSet().toList())
+        val adapter = RecordingAdapter(this, filteredRecordings)
         recordingListRecycler.adapter = adapter
         recordingListRecycler.invalidate()
     }
@@ -72,6 +93,10 @@ class RecordingListActivity : AppCompatActivity() {
             }
             android.R.id.home -> {
                 onBackPressed()
+                true
+            }
+            R.id.filter_recordings -> {
+                filterDialog.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -20,4 +20,6 @@
     <string name="synctext">Syncing recordings from server…</string>
     <string name="pleasewait">Please wait</string>
     <string name="play">Play</string>
+    <string name="filter_title">Filter Courses</string>
+    <string name="filter">Filter</string>
 </resources>

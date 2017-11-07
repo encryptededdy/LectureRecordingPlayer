@@ -1,3 +1,5 @@
 package nz.zhang.lecturerecordingplayer.recordings
 
-data class Course(val course: String, val semesterCode: String, val niceName: String)
+data class Course(val course: String, val semesterCode: String, val niceName: String) {
+    override fun toString(): String = niceName
+}

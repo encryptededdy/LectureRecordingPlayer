@@ -8,9 +8,7 @@ import com.tonyodev.fetch.Fetch
 import com.tonyodev.fetch.listener.FetchListener
 import com.tonyodev.fetch.request.Request
 import java.io.File
-import java.net.MalformedURLException
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -137,6 +135,10 @@ class Recording(val url: String) : Comparable<Recording> {
             downloaded = false
         }
         //Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Doesn't Exist")
+    }
+
+    fun niceName():String {
+        return "$courseName $courseNumber ($courseStream)"
     }
 
     fun downloadRecording(context: Context, cookies: String) {

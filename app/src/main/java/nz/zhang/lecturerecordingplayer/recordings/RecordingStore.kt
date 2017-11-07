@@ -40,7 +40,7 @@ object RecordingStore {
     fun courseList() : List<Course> {
         val uniqueCourses = HashSet<Course>()
         recordings.forEach { recording: Recording ->
-            uniqueCourses.add(Course(recording.courseName + recording.courseNumber + recording.courseStream, recording.semesterNumber, "${recording.courseName} ${recording.courseNumber}"))}
+            uniqueCourses.add(Course(recording.courseName + recording.courseNumber + recording.courseStream, recording.semesterNumber, recording.niceName()))}
         return uniqueCourses.toList()
     }
 }

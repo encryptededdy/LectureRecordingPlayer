@@ -86,7 +86,7 @@ class RecordingAdapter(context: Context, var recordings: List<Recording>) : Recy
         }
 
         // Set item views
-        viewHolder.courseName.text = "${recording.courseName} ${recording.courseNumber}"
+        viewHolder.courseName.text = recording.niceName()
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         viewHolder.courseTime.text = df.format(recording.recordingDate)
     }
