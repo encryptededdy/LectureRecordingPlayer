@@ -9,33 +9,86 @@
     <Button
         android:id="@+id/findRecordingsBtn"
         style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
+        android:drawableLeft="@drawable/ic_find_in_page_white_24dp"
+        android:drawablePadding="10dp"
         android:onClick="showCanvas"
-        android:paddingLeft="20dp"
+        android:paddingLeft="14dp"
         android:paddingRight="20dp"
         android:text="@string/find_recordings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="400dp" />
+
+    <Button
+        android:id="@+id/scanRecordingsBtn"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:drawableLeft="@drawable/ic_remove_red_eye_white_24dp"
+        android:drawablePadding="10dp"
+        android:enabled="false"
+        android:onClick="showCanvas"
+        android:paddingLeft="14dp"
+        android:paddingRight="20dp"
+        android:text="@string/autoscan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintWidth_max="400dp" />
 
     <Button
         android:id="@+id/listRecordingsBtn"
         style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:drawableLeft="@drawable/ic_list_white_24dp"
+        android:drawablePadding="10dp"
         android:onClick="showRecordingList"
-        android:paddingLeft="20dp"
+        android:paddingLeft="14dp"
         android:paddingRight="20dp"
         android:text="@string/list_recordings"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        app:layout_constraintWidth_max="400dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:text="@string/desc_view"
+        app:layout_constraintStart_toStartOf="@+id/listRecordingsBtn"
+        app:layout_constraintTop_toBottomOf="@+id/listRecordingsBtn" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:text="@string/desc_scan"
+        app:layout_constraintStart_toStartOf="@+id/scanRecordingsBtn"
+        app:layout_constraintTop_toBottomOf="@+id/scanRecordingsBtn" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="4dp"
+        android:text="@string/desc_add"
+        app:layout_constraintStart_toStartOf="@+id/findRecordingsBtn"
         app:layout_constraintTop_toBottomOf="@+id/findRecordingsBtn" />
+
 </android.support.constraint.ConstraintLayout>

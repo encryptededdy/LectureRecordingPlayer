@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Lecture Recording Player</string>
-    <string name="find_recordings">Find recordings</string>
-    <string name="title_activity_canvas_browser">CANVAS Browser</string>
+    <string name="find_recordings">Add Recordings</string>
+    <string name="title_activity_canvas_browser">Canvas Browser</string>
     <string name="title_activity_recording_browser">Recording List</string>
-    <string name="list_recordings">List Recordings</string>
+    <string name="list_recordings">View Recordings</string>
     <string name="title_activity_recording_view">Lecture Recording</string>
     <string name="download">Download</string>
     <string name="downloading">Downloading</string>
@@ -22,4 +22,8 @@
     <string name="play">Play</string>
     <string name="filter_title">Filter Courses</string>
     <string name="filter">Filter</string>
+    <string name="autoscan">Auto scrape recordings</string>
+    <string name="desc_view">View and manage already added recordings</string>
+    <string name="desc_scan">Automatically scan Canvas for recordings</string>
+    <string name="desc_add">Manually add recordings from Canvas</string>
 </resources>
