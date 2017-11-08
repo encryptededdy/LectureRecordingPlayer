@@ -26,4 +26,7 @@
     <string name="desc_view">View and manage already added recordings</string>
     <string name="desc_scan">Automatically scan Canvas for recordings</string>
     <string name="desc_add">Manually add recordings from Canvas</string>
+    <string name="scrapeText">Scraping for links...</string>
+    <string name="canvas_scraper">Canvas Scraper (BETA)</string>
+    <string name="authenticating">Authenticating...</string>
 </resources>

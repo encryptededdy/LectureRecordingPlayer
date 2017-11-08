@@ -42,4 +42,9 @@ class MainActivity : AppCompatActivity() {
         startActivity(recordingIntent)
     }
 
+    fun showCanvasScraper(view: View) {
+        val scraperIntent = Intent(this, CanvasScraperActivity::class.java)
+        startActivity(scraperIntent)
+    }
+
 }

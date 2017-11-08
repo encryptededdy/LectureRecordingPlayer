@@ -24,7 +24,7 @@ const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slide
 
 const val TIME_REGEX: String = "(?<=(\\/))\\d{12}(?=(\\.))"
 
-class Recording(val url: String) : Comparable<Recording> {
+class Recording(url: String) : Comparable<Recording> {
     val courseName: String
     val courseNumber: String
     val courseStream: String
@@ -124,21 +124,26 @@ class Recording(val url: String) : Comparable<Recording> {
 
     fun checkFS() {
         val file = getFile()
-        if (file.isFile && file.length() > 10000) {
+        downloaded = if (file.isFile && file.length() > 10000) {
             Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Exists")
-            downloaded = true
+            true
         } else if (file.length() < 10000) {
             // Delete empty files
             file.delete()
-            downloaded = false
+            false
         } else {
-            downloaded = false
+            false
         }
         //Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Doesn't Exist")
     }
 
     fun niceName():String {
         return "$courseName $courseNumber ($courseStream)"
+    }
+
+    fun niceNameWithDate():String {
+        val df = SimpleDateFormat("d MMM HH:mm")
+        return "$courseName $courseNumber ($courseStream) ${df.format(recordingDate)}"
     }
 
     fun downloadRecording(context: Context, cookies: String) {

@@ -17,7 +17,7 @@ import java.util.regex.Pattern
 
 
 const val CANVAS_URL: String = "https://canvas.auckland.ac.nz/"
-const val RECORDING_REGEX: String = "https:\\/\\/mediastore\\.auckland\\.ac\\.nz\\/.{0,100}(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slides\\.m4v)"
+const val RECORDING_REGEX: String = "https://mediastore\\.auckland\\.ac\\.nz/.{0,100}(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slides\\.m4v)"
 
 class CanvasBrowser : AppCompatActivity() {
 
@@ -41,7 +41,7 @@ class CanvasBrowser : AppCompatActivity() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun loadPage() {
+    private fun loadPage() {
         webview.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
                 // Inject JS to read the source of the site

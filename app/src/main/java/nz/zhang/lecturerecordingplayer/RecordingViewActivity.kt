@@ -63,9 +63,8 @@ class RecordingViewActivity : AppCompatActivity() {
             }
 
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
-                Toast.makeText(applicationContext, "SSL Error, loading CANVAS now", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "SSL Error", Toast.LENGTH_SHORT).show()
                 super.onReceivedSslError(view, handler, error)
-                //downloadWebView.loadUrl("https://canvas.auckland.ac.nz/")
             }
         }
         downloadWebView.settings.javaScriptEnabled = true
