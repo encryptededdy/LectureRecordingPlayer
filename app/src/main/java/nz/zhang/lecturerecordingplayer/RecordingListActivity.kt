@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.activity_recording_list.*
 import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingAdapter
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
+import nz.zhang.lecturerecordingplayer.recordings.RecordingStore.filteredRecordings
+import nz.zhang.lecturerecordingplayer.recordings.RecordingStore.loadAllRecordings
 import nz.zhang.lecturerecordingplayer.recordings.sync.RecordingSync
 import nz.zhang.lecturerecordingplayer.recordings.sync.SyncComplete
 
@@ -17,15 +19,6 @@ import nz.zhang.lecturerecordingplayer.recordings.sync.SyncComplete
 class RecordingListActivity : AppCompatActivity() {
 
     private lateinit var filterDialog:MaterialDialog
-    private lateinit var filteredRecordings:ArrayList<Recording>
-
-    private fun loadAllRecordings() {
-        filteredRecordings = if (!RecordingStore.recordings.isEmpty()){
-            RecordingStore.recordings.descendingSet().toList() as ArrayList
-        } else {
-            ArrayList()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

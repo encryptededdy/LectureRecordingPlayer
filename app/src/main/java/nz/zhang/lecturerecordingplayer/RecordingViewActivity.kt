@@ -85,7 +85,7 @@ class RecordingViewActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n") // Course names shouldn't need to be translated
     fun populateRecording() {
-        recording = RecordingStore.recordings.toList().asReversed().get(intent.getIntExtra(RECORDING_ID, 0))
+        recording = RecordingStore.filteredRecordings.toList()[intent.getIntExtra(RECORDING_ID, 0)]
         courseName.text = "${recording.courseName} ${recording.courseNumber} ${recording.courseStream}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         courseTime.text = df.format(recording.recordingDate)

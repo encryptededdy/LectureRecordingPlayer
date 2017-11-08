@@ -4,11 +4,14 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
+import kotlin.collections.ArrayList
 
 const val STORAGE_KEY = "recordings"
 
 object RecordingStore {
     var recordings: TreeSet<Recording> = TreeSet()
+    var filteredRecordings: ArrayList<Recording> = ArrayList()
+
     lateinit var sharedPrefs: SharedPreferences
 
     fun add(recording: Recording): Boolean {
@@ -34,6 +37,14 @@ object RecordingStore {
                 recording.checkFS()
         }
         // Otherwise, just stick with the empty array
+    }
+
+    fun loadAllRecordings() {
+        filteredRecordings = if (!recordings.isEmpty()){
+            recordings.descendingSet().toList() as ArrayList
+        } else {
+            ArrayList()
+        }
     }
 
     // Gets courses
