@@ -33,4 +33,6 @@
     <string name="scrape_desc">Scraping many courses may take a very long time</string>
     <string name="start">Start</string>
     <string name="tokenError">Unable to get authentication token - Please try again</string>
+    <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="ok">OK</string>
 </resources>
