@@ -47,7 +47,7 @@ class RecordingViewActivity : AppCompatActivity() {
                         // OK we're authenticated - let's start the download
                         downloadWebView.visibility = View.GONE
                         cookies = CookieManager.getInstance().getCookie(url)
-                        recording.downloadRecording(applicationContext, cookies)
+                        recording.downloadRecording(applicationContext, cookies, hqCheckBox.isChecked)
                     }
                     "User dashboard" -> // Loaded CANVAS! Now let's load the media page
                         //downloadWebView.visibility = View.GONE
@@ -101,10 +101,13 @@ class RecordingViewActivity : AppCompatActivity() {
                     downloading -> {
                         downloadButton.text = getString(R.string.downloading)
                         downloadButton.isEnabled = false
+                        hqCheckBox.isEnabled = false
                         progressBar.progress = progress
                     }
                     downloaded -> {
                         downloadButton.text = getString(R.string.delete)
+                        hqCheckBox.isChecked = recording.downloadHQ
+                        hqCheckBox.isEnabled = false
                         progressBar.progress = 0
                         downloadButton.isEnabled = true
                         playButton.isEnabled = true
@@ -112,6 +115,7 @@ class RecordingViewActivity : AppCompatActivity() {
                     else -> {
                         downloadButton.text = getString(R.string.download)
                         progressBar.progress = 0
+                        hqCheckBox.isEnabled = true
                         downloadButton.isEnabled = true
                         playButton.isEnabled = false
                     }
@@ -142,7 +146,11 @@ class RecordingViewActivity : AppCompatActivity() {
 
     fun playRecording(view: View) {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
+        if (recording.downloadHQ) {
+            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFileHQ()), "video/mp4")
+        } else {
+            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
+        }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         applicationContext.startActivity(intent)
     }

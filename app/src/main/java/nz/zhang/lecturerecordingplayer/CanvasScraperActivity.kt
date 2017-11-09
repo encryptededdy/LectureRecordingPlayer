@@ -1,8 +1,8 @@
 package nz.zhang.lecturerecordingplayer
 
 import android.annotation.SuppressLint
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -40,7 +40,7 @@ class CanvasScraperActivity : AppCompatActivity() {
                             statusNotif.text = getText(R.string.scrapeText)
                             startScraper(sessionID)
                         } else {
-                            Toast.makeText(applicationContext, "Unable to get authentication token - Please try again", Toast.LENGTH_LONG).show()
+                            Toast.makeText(applicationContext, getString(R.string.tokenError), Toast.LENGTH_LONG).show()
                         }
                     }
                     else -> {
@@ -80,8 +80,8 @@ class CanvasScraperActivity : AppCompatActivity() {
                     // build and show selection dialog
                     runOnUiThread {
                         MaterialDialog.Builder(parentContext)
-                                .title("Courses to scrape")
-                                .content("Scraping many courses may a very long time")
+                                .title(getString(R.string.scrape_title))
+                                .content(getString(R.string.scrape_desc))
                                 .items(names)
                                 .itemsCallbackMultiChoice(null) { dialog, which, text ->
                                     val selectedCourseIDs = ArrayList<Int>()
@@ -93,7 +93,7 @@ class CanvasScraperActivity : AppCompatActivity() {
                                     }).start()
                                     true
                                 }
-                                .positiveText("Start")
+                                .positiveText(getString(R.string.start))
                                 .show()
                     }
                 }

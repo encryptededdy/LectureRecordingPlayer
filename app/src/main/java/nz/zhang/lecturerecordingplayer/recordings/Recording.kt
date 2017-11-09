@@ -38,6 +38,7 @@ class Recording(url: String) : Comparable<Recording> {
 
     @Transient var downloading = false
     @Transient var downloaded = false
+    @Transient var downloadHQ = false
 
     @Transient var isValid = true // whether the recording is a valid url
 
@@ -117,19 +118,34 @@ class Recording(url: String) : Comparable<Recording> {
         return File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4")
     }
 
+    fun getFileHQ() : File {
+        return File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}_HQ.mp4")
+    }
+
     fun delete() {
         if (getFile().delete()) downloaded = false
+        if (getFileHQ().delete()) downloaded = false
         sendUpdate()
     }
 
     fun checkFS() {
         val file = getFile()
+        val hqfile = getFileHQ()
         downloaded = if (file.isFile && file.length() > 10000) {
             Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4 Exists")
+            downloadHQ = false
             true
-        } else if (file.length() < 10000) {
+        } else if (file.isFile && file.length() < 10000) {
             // Delete empty files
             file.delete()
+            false
+        } else if (hqfile.isFile && hqfile.length() > 10000) {
+            Log.d("FileCheck", "${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}_HQ.mp4 Exists")
+            downloadHQ = true
+            true
+        } else if (hqfile.isFile && hqfile.length() < 10000) {
+            // Delete empty files
+            hqfile.delete()
             false
         } else {
             false
@@ -146,17 +162,26 @@ class Recording(url: String) : Comparable<Recording> {
         return "$courseName $courseNumber ($courseStream) ${df.format(recordingDate)}"
     }
 
-    fun downloadRecording(context: Context, cookies: String) {
+    fun downloadRecording(context: Context, cookies: String, hq: Boolean) {
         val dir = File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/")
         dir.mkdirs() // creates needed dirs
         Fetch.Settings(context)
                 .enableLogging(true)
                 .apply()
+        //val fetch = Fetch.
         val fetch = Fetch.newInstance(context)
-        val request = Request("$urlNoExtension.mp4", dir.path, "${toString()}.mp4")
+        val request: Request
+        if (hq) {
+            request = Request("$urlNoExtension-slides.m4v", dir.path, "${toString()}_HQ.mp4")
+            Log.i("Download", "${urlNoExtension}_HQ.mp4")
+        } else {
+            request = Request("$urlNoExtension.mp4", dir.path, "${toString()}.mp4")
+            Log.i("Download", "$urlNoExtension.mp4")
+        }
         request.addHeader("Cookie", cookies)
         downloadID = fetch.enqueue(request)
         Log.d("DownloadStatus", "ID: $downloadID")
+        downloadHQ = hq
         if (downloadID != Fetch.ENQUEUE_ERROR_ID.toLong()) {
             // Download started successfully
             downloading = true
@@ -166,6 +191,8 @@ class Recording(url: String) : Comparable<Recording> {
         } else {
             // Error, so delete the file if any.
             File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4").delete()
+            File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}_HQ.mp4").delete()
+            fetch.remove(downloadID)
             dlError = true
             dlProgress = 0
             sendUpdate()
@@ -178,8 +205,10 @@ class Recording(url: String) : Comparable<Recording> {
                         downloading = false
                         // Delete error file if it exists
                         File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}.mp4").delete()
+                        File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}_HQ.mp4").delete()
                         dlProgress = progress
                         dlError = true
+                        fetch.remove(downloadID)
                         sendUpdate()
                     } else if (status == Fetch.STATUS_DOWNLOADING) {
                         sendUpdate()
@@ -194,7 +223,6 @@ class Recording(url: String) : Comparable<Recording> {
                 }
             }
         })
-        Log.d("Download", "$urlNoExtension.mp4")
     }
 
 }
