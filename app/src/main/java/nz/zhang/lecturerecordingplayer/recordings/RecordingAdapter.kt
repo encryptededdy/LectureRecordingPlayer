@@ -40,6 +40,7 @@ class RecordingAdapter(context: Context, var recordings: List<Recording>) : Recy
         var background: ConstraintLayout = itemView.backLayout
         var downloadedIcon: ImageView = itemView.downloadedIcon
         var downloadProgress: TextView = itemView.downloadProgress
+        var hqIcon: ImageView = itemView.hqIcon
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingAdapter.ViewHolder {
@@ -83,6 +84,12 @@ class RecordingAdapter(context: Context, var recordings: List<Recording>) : Recy
                 viewHolder.downloadProgress.visibility = View.INVISIBLE
                 viewHolder.downloadedIcon.visibility = View.INVISIBLE
             }
+        }
+
+        if (recording.downloadHQ) {
+            viewHolder.hqIcon.visibility = View.VISIBLE
+        } else {
+            viewHolder.hqIcon.visibility = View.INVISIBLE
         }
 
         // Set item views

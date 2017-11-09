@@ -33,15 +33,27 @@
 
     <ImageView
         android:id="@+id/downloadedIcon"
-        android:layout_width="48dp"
+        android:layout_width="36dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:tint="@android:color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_file_download_black_24dp" />
+
+    <ImageView
+        android:id="@+id/hqIcon"
+        android:layout_width="36dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="12dp"
+        android:tint="@android:color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/downloadedIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_high_quality_black_24dp" />
 
     <TextView
         android:id="@+id/downloadProgress"

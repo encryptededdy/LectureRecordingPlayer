@@ -1,10 +1,14 @@
 package nz.zhang.lecturerecordingplayer.canvasscraper
 
 import android.util.Log
-import okhttp3.*
-import com.google.gson.*
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import nz.zhang.lecturerecordingplayer.recordings.Recording
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BASIC
 import java.util.regex.Pattern
@@ -167,13 +171,14 @@ class CanvasScraper constructor(private val authCookie: String, private val list
         // Execute the request
         val request = Request.Builder().authenticate().url(apiUrl).build()
         val response = okHttpClient.newCall(request).execute()
-        response.validate(contentType = "json")
-                ?: Log.e("CanvasScraper", "Malformed response")
+        val validate = response.validate(contentType = "json")
+        if (validate == null) {
+            Log.e("CanvasScraper", "Malformed response")
+            return JsonObject() // empty
+        }
         // Remove "while(1);" prefix that Canvas returns for whatever reason
-        val body = response?.body()?.string()?.removePrefix("while(1);")
-                ?: throw NetworkException("No response body found", response)
-        // Parse the json body & return it
-        return jsonParser.parse(body)
+        val removePrefix = response?.body()?.string()?.removePrefix("while(1);")
+        if (removePrefix != null) return jsonParser.parse(removePrefix) else return JsonObject()
     }
 
     private fun Request.Builder.authenticate(): Request.Builder {
