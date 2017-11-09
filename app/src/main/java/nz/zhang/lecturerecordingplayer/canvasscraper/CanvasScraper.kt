@@ -11,6 +11,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level.BASIC
+import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 
 class CanvasScraper constructor(private val authCookie: String, private val listener: ScraperListener) {
@@ -61,8 +62,11 @@ class CanvasScraper constructor(private val authCookie: String, private val list
     }
 
     private fun parseForLectureUrls(apiUrl: HttpUrl) {
-        // Don't visit pages more than once
-        if (apiUrl in visitedUrls) {
+        // Don't visit pages more than once, or try to download files or users
+        if (apiUrl in visitedUrls ||
+                apiUrl.toString().endsWith("download?download_frd=1") ||
+                apiUrl.toString().contains("/files/") ||
+                apiUrl.toString().contains("/users/")) {
             return
         }
         visitedUrls += apiUrl
@@ -118,11 +122,14 @@ class CanvasScraper constructor(private val authCookie: String, private val list
             for (propertyName in toCheck) {
                 val propertyValue = jsonObject[propertyName]
                 if (propertyValue != null && !propertyValue.isJsonNull) {
-                    if (propertyValue.asString.endsWith("/modules") || propertyValue.asString.endsWith("/items")) {
-                        visitCanvasJsonUrl(propertyValue.asString+"?per_page=100") // if we're in modules or items, read more
+                    if (propertyValue.asString.contains("https://")) { // if the URL is even a valid URL...
+                        if (propertyValue.asString.endsWith("/modules") || propertyValue.asString.endsWith("/items")) {
+                            visitCanvasJsonUrl(propertyValue.asString + "?per_page=100") // if we're in modules or items, read more
+                        } else {
+                            visitCanvasJsonUrl(propertyValue.asString) // read more pages
+                        }
+                        break
                     }
-                    visitCanvasJsonUrl(propertyValue.asString) // read more pages
-                    break
                 }
             }
         } else if (json.isJsonArray) {
@@ -180,15 +187,20 @@ class CanvasScraper constructor(private val authCookie: String, private val list
     private fun apiCall(apiUrl: HttpUrl): JsonElement {
         // Execute the request
         val request = Request.Builder().authenticate().url(apiUrl).build()
-        val response = okHttpClient.newCall(request).execute()
-        val validate = response.validate(contentType = "json")
-        if (validate == null) {
-            Log.e("CanvasScraper", "Malformed response")
-            return JsonObject() // empty
+        try {
+            val response = okHttpClient.newCall(request).execute()
+            val validate = response.validate(contentType = "json")
+            if (validate == null) {
+                Log.e("CanvasScraper", "Malformed response")
+                return JsonObject() // empty
+            }
+            // Remove "while(1);" prefix that Canvas returns for whatever reason
+            val removePrefix = response?.body()?.string()?.removePrefix("while(1);")
+            if (removePrefix != null) return jsonParser.parse(removePrefix) else return JsonObject()
+        } catch (e:SocketTimeoutException) {
+            Log.e("CanvasScraper", "Request timed out")
+            return JsonObject()
         }
-        // Remove "while(1);" prefix that Canvas returns for whatever reason
-        val removePrefix = response?.body()?.string()?.removePrefix("while(1);")
-        if (removePrefix != null) return jsonParser.parse(removePrefix) else return JsonObject()
     }
 
     private fun Request.Builder.authenticate(): Request.Builder {
