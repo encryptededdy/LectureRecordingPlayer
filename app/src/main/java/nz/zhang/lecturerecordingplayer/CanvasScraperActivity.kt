@@ -17,6 +17,7 @@ import nz.zhang.lecturerecordingplayer.canvasscraper.ScraperCourseListListener
 import nz.zhang.lecturerecordingplayer.canvasscraper.ScraperListener
 import nz.zhang.lecturerecordingplayer.recordings.Recording
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
+import nz.zhang.lecturerecordingplayer.recordings.sync.RecordingSync
 
 const val SESSIONCOOKIE_REGEX = "canvas_session=.*?(?=;)"
 
@@ -64,7 +65,9 @@ class CanvasScraperActivity : AppCompatActivity() {
             val listener = object:ScraperListener {
                 @SuppressLint("SetTextI18n")
                 override fun update(recording: Recording) {
-                    RecordingStore.add(recording)
+                    if (RecordingStore.add(recording)) {
+                        RecordingSync.uploadRecording(recording)
+                    }
                     runOnUiThread { foundNotif.text = "Found: ${recording.niceNameWithDate()}" }
                 }
 

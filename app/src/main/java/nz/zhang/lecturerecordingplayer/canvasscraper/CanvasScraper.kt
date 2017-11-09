@@ -36,7 +36,7 @@ class CanvasScraper constructor(private val authCookie: String, private val list
     fun run(courseIds:List<Int>) {
         // val courseIds = courseIds()
         //val courseIds = arrayOf(23575, 23572)
-        courseIds.take(1).forEach(this::parseForLectureUrls)
+        courseIds.forEach(this::parseForLectureUrls)
         // Display URLs
         //println(Gson().toJson(lectureUrls))
         listener.complete()
@@ -118,7 +118,10 @@ class CanvasScraper constructor(private val authCookie: String, private val list
             for (propertyName in toCheck) {
                 val propertyValue = jsonObject[propertyName]
                 if (propertyValue != null && !propertyValue.isJsonNull) {
-                    visitCanvasJsonUrl(propertyValue.asString)
+                    if (propertyValue.asString.endsWith("/modules") || propertyValue.asString.endsWith("/items")) {
+                        visitCanvasJsonUrl(propertyValue.asString+"?per_page=100") // if we're in modules or items, read more
+                    }
+                    visitCanvasJsonUrl(propertyValue.asString) // read more pages
                     break
                 }
             }
@@ -162,8 +165,15 @@ class CanvasScraper constructor(private val authCookie: String, private val list
         // https://canvas.auckland.ac.nz/api/v1/courses
         val coursesUrl = apiUrl.newBuilder().addPathSegment("courses").addQueryParameter("per_page", "100").build()
         val json = apiCall(coursesUrl)
-        val ids = json.asJsonArray.map { it.asJsonObject["id"].asInt }
-        val names = json.asJsonArray.map { it.asJsonObject["course_code"].asString }
+        System.out.println("Found JSON: "+json.toString())
+        val ids = ArrayList<Int>()
+        val names = ArrayList<String>()
+        for (obj:JsonElement in json.asJsonArray) {
+            if (obj.asJsonObject["course_code"] != null) {
+                ids.add(obj.asJsonObject["id"].asInt)
+                names.add(obj.asJsonObject["course_code"].asString)
+            }
+        }
         listener.update(ids, names, this)
     }
 
