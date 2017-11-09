@@ -84,7 +84,7 @@ class Recording(url: String) : Comparable<Recording> {
 
     @SuppressLint("SimpleDateFormat")
     override fun toString(): String {
-        val df = SimpleDateFormat("YYYY-MM-dd_HHmm")
+        val df = SimpleDateFormat("yyyy-MM-dd_HHmm")
         return "${courseName}_${courseNumber}_${df.format(recordingDate)}$recordingSuffix"
     }
 
