@@ -37,9 +37,13 @@ class RecordingListActivity : AppCompatActivity() {
                         if (text != null && text.contains(recording.niceName())) filteredRecordings.add(recording)
                     })
                     populateRecordings()
+                    filterDialog.dismiss()
                     true
                 }
                 .positiveText(getString(R.string.filter))
+                .neutralText("Clear")
+                .onNeutral { dialog, which -> filterDialog.clearSelectedIndices(false)}
+                .autoDismiss(false)
                 .build()
         filterDialog.selectAllIndices() // don't need to send callback
     }
