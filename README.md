@@ -12,4 +12,4 @@ Android Lecture Recording Player/Manager for the University of Auckland. My firs
 * Streaming
 * Custom recording player (gain, speed controls)
 ## Screenshots
-![grid](https://raw.githubusercontent.com/encryptededdy/LectureRecordingPlayer/encryptededdy-readmeedit/grid.png)
+![grid](https://raw.githubusercontent.com/encryptededdy/LectureRecordingPlayer/master/grid.png)
