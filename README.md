@@ -1,3 +1,4 @@
+![icon](https://i.imgur.com/t4Gnzkg.png)
 # LectureRecordingPlayer
 Android Lecture Recording Player/Manager for the University of Auckland. My first Android App and experience with Kotlin
 * Automatically scrapes lecture recording links using Canvas API (visits all Pages/Modules/Announcements)
