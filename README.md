@@ -7,7 +7,7 @@ Android Lecture Recording Player/Manager for the University of Auckland. My firs
 * Playback lecture recordings (using installed apps, custom player todo)
 ### Future todo
 * ~~Better recording management (course grouping etc.)~~
-* Faster scraping, ~~page depth > 1 scraping~~
+* ~~Faster scraping, page depth > 1 scraping~~
 * ~~Support for multiresolution downloading~~
 * Streaming
 * Custom recording player (gain, speed controls)
