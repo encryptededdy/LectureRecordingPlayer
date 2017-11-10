@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lecture Recording Player</string>
+    <string name="app_name">Lecture Recording Manager</string>
     <string name="find_recordings">Add Recordings</string>
     <string name="title_activity_canvas_browser">Canvas Browser</string>
     <string name="title_activity_recording_browser">Recording List</string>

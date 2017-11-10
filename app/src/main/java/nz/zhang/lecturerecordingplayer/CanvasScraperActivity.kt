@@ -120,7 +120,7 @@ class CanvasScraperActivity : AppCompatActivity() {
         })
         scrapeThread.start()
     }
-    
+
     // Handle back button functionality
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return if (item?.itemId == android.R.id.home) {
