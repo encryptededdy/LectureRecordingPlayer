@@ -10,10 +10,12 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
 import com.tonyodev.fetch.Fetch
+import kotlinx.android.synthetic.main.activity_main.*
 import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 
 
 const val PREFS_NAME = "RecordingStorage"
+const val VERSION = "Beta 1.2"
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
         RecordingStore.sharedPrefs = getSharedPreferences(PREFS_NAME, 0)
         RecordingStore.loadList()
+        versionText.text = VERSION
     }
 
     fun showCanvas(view: View) {
