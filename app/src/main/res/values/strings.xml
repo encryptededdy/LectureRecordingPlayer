@@ -30,7 +30,7 @@
     <string name="canvas_scraper">Canvas Scraper (BETA)</string>
     <string name="authenticating">Authenticating…</string>
     <string name="scrape_title">Courses to scrape</string>
-    <string name="scrape_desc">Scraping many courses may take a very long time</string>
+    <string name="scrape_desc">Scraping many courses may take a very long time. Courses already scraped this session will be ignored</string>
     <string name="start">Start</string>
     <string name="tokenError">Unable to get authentication token - Please try again</string>
     <string name="open_source_licenses">Open Source Licenses</string>

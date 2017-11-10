@@ -23,14 +23,30 @@ const val SESSIONCOOKIE_REGEX = "canvas_session=.*?(?=;)"
 
 class CanvasScraperActivity : AppCompatActivity() {
 
+    // build the listener to the scraper
+    val listener = object : ScraperListener {
+        @SuppressLint("SetTextI18n")
+        override fun update(recording: Recording) {
+            if (RecordingStore.add(recording)) {
+                RecordingSync.uploadRecording(recording)
+            }
+            runOnUiThread { foundNotif.text = "Found: ${recording.niceNameWithDate()}" }
+        }
+
+        override fun complete() {
+            // display completion things
+            runOnUiThread { onBackPressed() }
+        }
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_canvas_scraper)
         loginWebView.visibility = View.GONE
-        loginWebView.webViewClient = object : WebViewClient(){
+        loginWebView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
-                when(view?.title) {
+                when (view?.title) {
                     "User dashboard" -> {
                         // OK we're authenticated - let's start the scrape and hide the webview
                         loginWebView.visibility = View.GONE
@@ -55,64 +71,56 @@ class CanvasScraperActivity : AppCompatActivity() {
             }
         }
         loginWebView.settings.javaScriptEnabled = true
-        loginWebView.loadUrl("https://canvas.auckland.ac.nz/")
+        if (CanvasScraper.isRunning) {
+            statusNotif.text = getText(R.string.scrapeText)
+            CanvasScraper.setListener(listener)
+        } else {
+            loginWebView.loadUrl("https://canvas.auckland.ac.nz/")
+        }
     }
 
     private fun startScraper(sessionID: String) {
         val parentContext = this
         val scrapeThread = Thread(Runnable {
-            // build the listener
-            val listener = object:ScraperListener {
-                @SuppressLint("SetTextI18n")
-                override fun update(recording: Recording) {
-                    if (RecordingStore.add(recording)) {
-                        RecordingSync.uploadRecording(recording)
-                    }
-                    runOnUiThread { foundNotif.text = "Found: ${recording.niceNameWithDate()}" }
-                }
-
-                override fun complete() {
-                    // display completion things
-                    runOnUiThread { onBackPressed() }
-                }
-            }
-
-            val idListener = object:ScraperCourseListListener {
+            val idListener = object : ScraperCourseListListener {
                 @SuppressLint("SetTextI18n")
                 override fun update(ids: List<Int>, names: List<String>, scraper: CanvasScraper) {
                     // build and show selection dialog
                     runOnUiThread {
-                        MaterialDialog.Builder(parentContext)
-                                .title(getString(R.string.scrape_title))
-                                .content(getString(R.string.scrape_desc))
-                                .items(names)
-                                .itemsCallbackMultiChoice(null) { dialog, which, text ->
-                                    val selectedCourseIDs = ArrayList<Int>()
-                                    which.forEach { pos ->  selectedCourseIDs.add(ids[pos])}
-                                    System.out.println(selectedCourseIDs)
-                                    // now scrape for the data
-                                    Thread(Runnable {
-                                        scraper.run(selectedCourseIDs)
-                                    }).start()
-                                    true
-                                }
-                                .positiveText(getString(R.string.start))
-                                .show()
+                        try {
+                            MaterialDialog.Builder(parentContext)
+                                    .title(getString(R.string.scrape_title))
+                                    .content(getString(R.string.scrape_desc))
+                                    .items(names)
+                                    .itemsCallbackMultiChoice(null) { dialog, which, text ->
+                                        val selectedCourseIDs = ArrayList<Int>()
+                                        which.forEach { pos -> selectedCourseIDs.add(ids[pos]) }
+                                        System.out.println(selectedCourseIDs)
+                                        // now scrape for the data
+                                        Thread(Runnable {
+                                            CanvasScraper.run(selectedCourseIDs, listener)
+                                        }).start()
+                                        true
+                                    }
+                                    .positiveText(getString(R.string.start))
+                                    .show()
+                        } catch (e: Exception) {
+                            // Oops, couldn't show the dialog. So do nothing.
+                        }
                     }
                 }
             }
 
             try {
                 // run the scraper
-                val scraper = CanvasScraper(sessionID, listener)
-                scraper.getCourseData(idListener)
-            } catch (e:Exception) {
+                CanvasScraper.getCourseData(idListener, sessionID)
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         })
         scrapeThread.start()
     }
-
+    
     // Handle back button functionality
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return if (item?.itemId == android.R.id.home) {

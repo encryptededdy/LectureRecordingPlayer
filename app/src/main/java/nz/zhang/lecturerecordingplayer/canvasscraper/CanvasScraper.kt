@@ -14,11 +14,17 @@ import okhttp3.logging.HttpLoggingInterceptor.Level.BASIC
 import java.net.SocketTimeoutException
 import java.util.regex.Pattern
 
-class CanvasScraper constructor(private val authCookie: String, private val listener: ScraperListener) {
+object CanvasScraper {
 
     private val okHttpClient: OkHttpClient
 
     private val jsonParser = JsonParser()
+
+    var isRunning = false
+
+    private var authCookie = ""
+
+    private var listener:ScraperListener? = null
 
     private val apiUrl = HttpUrl.Builder().scheme("https").host("canvas.auckland.ac.nz").addPathSegments("api/v1").build()
 
@@ -34,19 +40,34 @@ class CanvasScraper constructor(private val authCookie: String, private val list
         okHttpClient = OkHttpClient.Builder().addInterceptor(logging).build()
     }
 
-    fun run(courseIds:List<Int>) {
-        // val courseIds = courseIds()
-        //val courseIds = arrayOf(23575, 23572)
-        courseIds.forEach(this::parseForLectureUrls)
-        // Display URLs
-        //println(Gson().toJson(lectureUrls))
-        listener.complete()
+    fun run(courseIds:List<Int>, listener: ScraperListener) {
+        this.listener = listener
+        if (!isRunning) {
+            isRunning = true
+            // val courseIds = courseIds()
+            //val courseIds = arrayOf(23575, 23572)
+            courseIds.forEach(this::parseForLectureUrls)
+            // Display URLs
+            //println(Gson().toJson(lectureUrls))
+            this.listener?.complete()
+            Log.i("CanvasScraper", "Scrape complete!")
+            isRunning = false
+            clearListener()
+        }
+    }
+
+    fun setListener(listener: ScraperListener) {
+        this.listener = listener
+    }
+
+    fun clearListener() {
+        listener = null
     }
 
     private fun foundLectureURL(url: HttpUrl) {
         val recording = Recording(url.toString())
         if (recording.isValid) {
-            listener.update(recording)
+            listener?.update(recording)
         }
     }
 
@@ -168,7 +189,8 @@ class CanvasScraper constructor(private val authCookie: String, private val list
         }
     }
 
-    fun getCourseData(listener: ScraperCourseListListener) {
+    fun getCourseData(listener: ScraperCourseListListener, authCookie: String) {
+        this.authCookie = authCookie
         // https://canvas.auckland.ac.nz/api/v1/courses
         val coursesUrl = apiUrl.newBuilder().addPathSegment("courses").addQueryParameter("per_page", "100").build()
         val json = apiCall(coursesUrl)
