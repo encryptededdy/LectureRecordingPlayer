@@ -1,5 +1,7 @@
 ![icon](https://i.imgur.com/t4Gnzkg.png)
 # LectureRecordingPlayer
+Play beta testing: https://play.google.com/apps/testing/nz.zhang.lecturerecordingplayer
+
 Android Lecture Recording Player/Manager for the University of Auckland. My first Android App and experience with Kotlin
 * Automatically scrapes lecture recording links using Canvas API (visits all Pages/Modules/Announcements)
 * Syncs lecture recordings with the [Canvas Video Enhancer](https://github.com/ChineseElectricPanda/canvas-video-enhancer) playlist system server
