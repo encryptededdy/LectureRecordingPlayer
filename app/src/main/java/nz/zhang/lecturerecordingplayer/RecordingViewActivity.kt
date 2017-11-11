@@ -27,6 +27,7 @@ class RecordingViewActivity : AppCompatActivity() {
 
     companion object {
         const val RECORDING_ID = "recording_id"
+        const val RECORDING_FROMSORTED = "recording_fromsorted"
     }
 
     lateinit var recording: Recording
@@ -84,7 +85,12 @@ class RecordingViewActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n") // Course names shouldn't need to be translated
     fun populateRecording() {
-        recording = RecordingStore.filteredRecordings.toList()[intent.getIntExtra(RECORDING_ID, 0)]
+        if (!intent.getBooleanExtra(RECORDING_FROMSORTED, true)) {
+            // If we the ID is from the unfiltered list (useful for direct referencing)
+            recording = RecordingStore.recordings.toList()[intent.getIntExtra(RECORDING_ID, 0)]
+        } else {
+            recording = RecordingStore.filteredRecordings.toList()[intent.getIntExtra(RECORDING_ID, 0)]
+        }
         courseName.text = "${recording.courseName} ${recording.courseNumber} ${recording.courseStream}"
         val df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, Locale.getDefault())
         courseTime.text = df.format(recording.recordingDate)

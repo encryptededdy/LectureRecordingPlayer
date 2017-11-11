@@ -1,12 +1,18 @@
 package nz.zhang.lecturerecordingplayer.recordings
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
+import android.content.Intent
 import android.os.Environment
+import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.tonyodev.fetch.Fetch
 import com.tonyodev.fetch.listener.FetchListener
 import com.tonyodev.fetch.request.Request
+import nz.zhang.lecturerecordingplayer.RecordingViewActivity
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -157,6 +163,7 @@ class Recording(url: String) : Comparable<Recording> {
         return "$courseName $courseNumber ($courseStream)"
     }
 
+    @SuppressLint("SimpleDateFormat")
     fun niceNameWithDate():String {
         val df = SimpleDateFormat("d MMM HH:mm")
         return "$courseName $courseNumber ($courseStream) ${df.format(recordingDate)}"
@@ -187,6 +194,7 @@ class Recording(url: String) : Comparable<Recording> {
             downloading = true
             dlError = false
             dlProgress = 0
+            sendDownloadProgressNotification(context, 0)
             sendUpdate()
         } else {
             // Error, so delete the file if any.
@@ -195,6 +203,7 @@ class Recording(url: String) : Comparable<Recording> {
             fetch.remove(downloadID)
             dlError = true
             dlProgress = 0
+            sendDownloadErrorNotification(context)
             sendUpdate()
         }
         fetch.addFetchListener(object : FetchListener {
@@ -214,10 +223,12 @@ class Recording(url: String) : Comparable<Recording> {
                         sendUpdate()
                         dlProgress = progress
                         dlError = false
+                        sendDownloadProgressNotification(context, progress)
                     } else if (status == Fetch.STATUS_DONE) {
                         downloaded = true
                         downloading = false
                         dlError = false
+                        sendDownloadCompleteNotification(context)
                         sendUpdate()
                     }
                 }
@@ -225,4 +236,66 @@ class Recording(url: String) : Comparable<Recording> {
         })
     }
 
+    private fun sendDownloadCompleteNotification(context: Context) {
+        val notifBuilder = NotificationCompat.Builder(context, "downloads")
+                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setContentTitle("Download Complete")
+                .setContentText(niceNameWithDate())
+
+        notifBuilder.setContentIntent(getRecordingActivityPendingIntent(context))
+        val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        mNotificationManager.notify(hashCode(), notifBuilder.build())
+    }
+
+    private fun sendDownloadErrorNotification(context: Context) {
+        val notifBuilder = NotificationCompat.Builder(context, "downloads")
+                .setSmallIcon(android.R.drawable.stat_notify_error)
+                .setContentTitle("Download Failed")
+                .setContentText(niceNameWithDate())
+
+        notifBuilder.setContentIntent(getRecordingActivityPendingIntent(context))
+        val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        mNotificationManager.notify(hashCode(), notifBuilder.build())
+    }
+
+    private fun sendDownloadProgressNotification(context: Context, progress: Int) {
+        val notifBuilder: NotificationCompat.Builder
+        if (progress > 0) {
+            notifBuilder = NotificationCompat.Builder(context, "downloads")
+                    .setSmallIcon(android.R.drawable.stat_sys_download)
+                    .setContentTitle("Downloading")
+                    .setProgress(100, progress, false)
+                    .setContentText(niceNameWithDate())
+        } else {
+            // Still pending
+            notifBuilder = NotificationCompat.Builder(context, "downloads")
+                    .setSmallIcon(android.R.drawable.stat_sys_download)
+                    .setContentTitle("Download pending")
+                    .setProgress(100, progress, true)
+                    .setContentText(niceNameWithDate())
+        }
+
+        notifBuilder.setContentIntent(getRecordingActivityPendingIntent(context))
+        val mNotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        mNotificationManager.notify(hashCode(), notifBuilder.build())
+    }
+
+    private fun getRecordingActivityPendingIntent(context: Context) : PendingIntent {
+        // Creates an explicit intent for an Activity in your app
+        val resultIntent = Intent(context, RecordingViewActivity::class.java)
+        resultIntent.putExtra(RecordingViewActivity.RECORDING_ID, RecordingStore.recordings.indexOf(this))
+        resultIntent.putExtra(RecordingViewActivity.RECORDING_FROMSORTED, false)
+
+        val stackBuilder = TaskStackBuilder.create(context)
+        stackBuilder.addParentStack(RecordingViewActivity::class.java)
+        stackBuilder.addNextIntent(resultIntent)
+        val resultPendingIntent = stackBuilder.getPendingIntent(
+                0,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        return resultPendingIntent
+    }
 }

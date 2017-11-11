@@ -9,9 +9,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.afollestad.materialdialogs.MaterialDialog
-import com.tonyodev.fetch.Fetch
 import kotlinx.android.synthetic.main.activity_main.*
-import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 
 
 const val PREFS_NAME = "RecordingStorage"
@@ -22,18 +20,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        // Remove all Fetch requests in db
-        Fetch.newInstance(applicationContext).removeRequests()
+        versionText.text = VERSION
 
         // Ask for storage perms
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        Array<String>(1){Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0)
+            ActivityCompat.requestPermissions(this,
+                    Array<String>(1){ Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0)
         }
-        RecordingStore.sharedPrefs = getSharedPreferences(PREFS_NAME, 0)
-        RecordingStore.loadList()
-        versionText.text = VERSION
+
     }
 
     fun showCanvas(view: View) {
