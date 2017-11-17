@@ -217,6 +217,7 @@ class Recording(url: String) : Comparable<Recording> {
                         File("${Environment.getExternalStorageDirectory()}/Download/Lecture Recordings/${toString()}_HQ.mp4").delete()
                         dlProgress = progress
                         dlError = true
+                        sendDownloadErrorNotification(context)
                         fetch.remove(downloadID)
                         sendUpdate()
                     } else if (status == Fetch.STATUS_DOWNLOADING) {

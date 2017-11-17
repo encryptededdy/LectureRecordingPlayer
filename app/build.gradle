@@ -8,10 +8,10 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "nz.zhang.lecturerecordingplayer"
-        minSdkVersion 24
+        minSdkVersion 21
         targetSdkVersion 27
-        versionCode 2
-        versionName "b1.2"
+        versionCode 4
+        versionName "b1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

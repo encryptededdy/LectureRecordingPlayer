@@ -33,9 +33,7 @@ class RecordingListActivity : AppCompatActivity() {
                 .items(RecordingStore.courseList())
                 .itemsCallbackMultiChoice(null) { _, _, text ->
                     filteredRecordings.clear()
-                    RecordingStore.recordings.descendingSet().toList().forEach({ recording: Recording ->
-                        if (text != null && text.contains(recording.niceName())) filteredRecordings.add(recording)
-                    })
+                    filteredRecordings = RecordingStore.recordings.toList().filter { (text != null && text.contains(it.niceName())) } as ArrayList<Recording>
                     populateRecordings()
                     filterDialog.dismiss()
                     true

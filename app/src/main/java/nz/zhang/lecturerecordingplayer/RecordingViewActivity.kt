@@ -158,7 +158,7 @@ class RecordingViewActivity : AppCompatActivity() {
             intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
         }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        applicationContext.startActivity(intent)
+        this.startActivity(intent)
     }
 
 }
