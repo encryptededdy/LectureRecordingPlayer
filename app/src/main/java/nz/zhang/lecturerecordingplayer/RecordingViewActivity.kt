@@ -44,13 +44,13 @@ class RecordingViewActivity : AppCompatActivity() {
         downloadWebView.webViewClient = object : WebViewClient(){
             override fun onPageFinished(view: WebView?, url: String?) {
                 when(view?.title) {
-                    "Media preview - The University of Auckland" -> {
+                    Constants.RECORDING_PAGE_TITLE -> {
                         // OK we're authenticated - let's start the download
                         downloadWebView.visibility = View.GONE
                         cookies = CookieManager.getInstance().getCookie(url)
                         recording.downloadRecording(applicationContext, cookies, hqCheckBox.isChecked)
                     }
-                    "User dashboard" -> // Loaded CANVAS! Now let's load the media page
+                    Constants.CANVAS_HOMEPAGE_TITLE -> // Loaded CANVAS! Now let's load the media page
                         //downloadWebView.visibility = View.GONE
                         downloadWebView.loadUrl("${recording.urlNoExtension}.preview")
                     else -> {

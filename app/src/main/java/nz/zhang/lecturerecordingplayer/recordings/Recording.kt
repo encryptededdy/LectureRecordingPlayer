@@ -106,7 +106,7 @@ class Recording(url: String) : Comparable<Recording> {
 
     override fun equals(other: Any?): Boolean {
         if (other is Recording) {
-            return urlNoExtension.equals(other.urlNoExtension)
+            return urlNoExtension == other.urlNoExtension
         } else {
             return false
         }

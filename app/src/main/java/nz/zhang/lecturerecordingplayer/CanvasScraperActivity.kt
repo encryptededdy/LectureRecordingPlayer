@@ -47,7 +47,7 @@ class CanvasScraperActivity : AppCompatActivity() {
         loginWebView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 when (view?.title) {
-                    "User dashboard" -> {
+                    Constants.CANVAS_HOMEPAGE_TITLE -> {
                         // OK we're authenticated - let's start the scrape and hide the webview
                         loginWebView.visibility = View.GONE
                         val cookies = CookieManager.getInstance().getCookie(url)
@@ -75,7 +75,7 @@ class CanvasScraperActivity : AppCompatActivity() {
             statusNotif.text = getText(R.string.scrapeText)
             CanvasScraper.setListener(listener)
         } else {
-            loginWebView.loadUrl("https://canvas.auckland.ac.nz/")
+            loginWebView.loadUrl(Constants.CANVAS_URL)
         }
     }
 
