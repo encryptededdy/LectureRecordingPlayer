@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 
 const val PREFS_NAME = "RecordingStorage"
-const val VERSION = "Beta 1.3"
+const val VERSION = "Beta 1.4"
 
 class MainActivity : AppCompatActivity() {
 
