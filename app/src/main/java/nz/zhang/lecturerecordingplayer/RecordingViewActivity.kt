@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
-import android.support.v4.content.FileProvider
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
@@ -22,13 +22,10 @@ import nz.zhang.lecturerecordingplayer.recordings.RecordingStore
 import java.text.DateFormat
 import java.util.*
 
+const val RECORDING_ID = "recording_id"
+const val RECORDING_FROMSORTED = "recording_fromsorted"
 
 class RecordingViewActivity : AppCompatActivity() {
-
-    companion object {
-        const val RECORDING_ID = "recording_id"
-        const val RECORDING_FROMSORTED = "recording_fromsorted"
-    }
 
     lateinit var recording: Recording
     var cookies = ""
@@ -151,14 +148,22 @@ class RecordingViewActivity : AppCompatActivity() {
     }
 
     fun playRecording(view: View) {
-        val intent = Intent(Intent.ACTION_VIEW)
+        val playbackIntent = Intent(view.context, VideoPlayerActivity::class.java)
         if (recording.downloadHQ) {
-            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFileHQ()), "video/mp4")
+            playbackIntent.putExtra(RECORDING_PATH, recording.getFileHQ().path)
         } else {
-            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
+            playbackIntent.putExtra(RECORDING_PATH, recording.getFile().path)
         }
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        this.startActivity(intent)
+        playbackIntent.putExtra(RECORDING_NAME, recording.niceNameWithDate())
+        ContextCompat.startActivity(view.context, playbackIntent, playbackIntent.extras)
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        if (recording.downloadHQ) {
+//            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFileHQ()), "video/mp4")
+//        } else {
+//            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
+//        }
+//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//        this.startActivity(intent)
     }
 
 }

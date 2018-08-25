@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.item_recording.view.*
 import nz.zhang.lecturerecordingplayer.R
+import nz.zhang.lecturerecordingplayer.RECORDING_ID
 import nz.zhang.lecturerecordingplayer.RecordingViewActivity
 import java.text.DateFormat
 import java.util.*
@@ -60,7 +61,7 @@ class RecordingAdapter(context: Context, var recordings: List<Recording>) : Recy
         viewHolder.background.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 val recordingIntent = Intent(viewHolder.background.context, RecordingViewActivity::class.java)
-                recordingIntent.putExtra(RecordingViewActivity.RECORDING_ID, position)
+                recordingIntent.putExtra(RECORDING_ID, position)
                 startActivity(viewHolder.background.context, recordingIntent, recordingIntent.extras)
             }
         })

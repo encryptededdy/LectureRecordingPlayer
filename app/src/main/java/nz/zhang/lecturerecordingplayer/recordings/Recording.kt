@@ -12,6 +12,8 @@ import android.util.Log
 import com.tonyodev.fetch.Fetch
 import com.tonyodev.fetch.listener.FetchListener
 import com.tonyodev.fetch.request.Request
+import nz.zhang.lecturerecordingplayer.RECORDING_FROMSORTED
+import nz.zhang.lecturerecordingplayer.RECORDING_ID
 import nz.zhang.lecturerecordingplayer.RecordingViewActivity
 import java.io.File
 import java.text.SimpleDateFormat
@@ -287,8 +289,8 @@ class Recording(url: String) : Comparable<Recording> {
     private fun getRecordingActivityPendingIntent(context: Context) : PendingIntent {
         // Creates an explicit intent for an Activity in your app
         val resultIntent = Intent(context, RecordingViewActivity::class.java)
-        resultIntent.putExtra(RecordingViewActivity.RECORDING_ID, RecordingStore.recordings.indexOf(this))
-        resultIntent.putExtra(RecordingViewActivity.RECORDING_FROMSORTED, false)
+        resultIntent.putExtra(RECORDING_ID, RecordingStore.recordings.indexOf(this))
+        resultIntent.putExtra(RECORDING_FROMSORTED, false)
 
         val stackBuilder = TaskStackBuilder.create(context)
         stackBuilder.addParentStack(RecordingViewActivity::class.java)

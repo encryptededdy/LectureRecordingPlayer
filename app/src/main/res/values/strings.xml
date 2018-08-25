@@ -35,4 +35,8 @@
     <string name="tokenError">Unable to get authentication token - Please try again</string>
     <string name="open_source_licenses">Open Source Licenses</string>
     <string name="ok">OK</string>
+
+    <string name="title_activity_video_player">VideoPlayerActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
