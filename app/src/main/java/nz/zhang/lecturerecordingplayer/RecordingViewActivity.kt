@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.http.SslError
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MenuItem
@@ -148,22 +149,32 @@ class RecordingViewActivity : AppCompatActivity() {
     }
 
     fun playRecording(view: View) {
-        val playbackIntent = Intent(view.context, VideoPlayerActivity::class.java)
-        if (recording.downloadHQ) {
-            playbackIntent.putExtra(RECORDING_PATH, recording.getFileHQ().path)
-        } else {
-            playbackIntent.putExtra(RECORDING_PATH, recording.getFile().path)
-        }
-        playbackIntent.putExtra(RECORDING_NAME, recording.niceNameWithDate())
-        ContextCompat.startActivity(view.context, playbackIntent, playbackIntent.extras)
-//        val intent = Intent(Intent.ACTION_VIEW)
-//        if (recording.downloadHQ) {
-//            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFileHQ()), "video/mp4")
-//        } else {
-//            intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
-//        }
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//        this.startActivity(intent)
+        // Prompt for internal or external player
+        MaterialDialog.Builder(this)
+                .title(getString(R.string.select_player_title))
+                .content(getString(R.string.select_player_desc))
+                .positiveText(getString(R.string.select_player_builtin))
+                .negativeText(getString(R.string.select_player_external))
+                .onPositive {_, _ -> // play using internal player
+                    val playbackIntent = Intent(view.context, VideoPlayerActivity::class.java)
+                    if (recording.downloadHQ) {
+                        playbackIntent.putExtra(RECORDING_PATH, recording.getFileHQ().path)
+                    } else {
+                        playbackIntent.putExtra(RECORDING_PATH, recording.getFile().path)
+                    }
+                    playbackIntent.putExtra(RECORDING_NAME, recording.niceNameWithDate())
+                    ContextCompat.startActivity(view.context, playbackIntent, playbackIntent.extras)}
+                .onNegative {_, _ -> // play using external player
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    if (recording.downloadHQ) {
+                        intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFileHQ()), "video/mp4")
+                    } else {
+                        intent.setDataAndType(FileProvider.getUriForFile(this, "${applicationContext.packageName}.nz.zhang.lecturerecordingplayer.playbackprovider", recording.getFile()), "video/mp4")
+                    }
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    this.startActivity(intent)
+                }
+                .show()
     }
 
 }
