@@ -24,7 +24,7 @@ class LectureRecordingApp : Application() {
         // Setup notification channel if we're on O R E O
         if (Build.VERSION.SDK_INT >= 26) {
             val nManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel("downloads", "Download Status", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel("downloads", "Download Status", NotificationManager.IMPORTANCE_LOW)
             channel.description = "Status notifications for recording downloads"
             channel.enableVibration(true)
             nManager.createNotificationChannel(channel)
