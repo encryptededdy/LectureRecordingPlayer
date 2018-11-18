@@ -1,5 +1,9 @@
 package nz.zhang.lecturerecordingplayer.recordings
 
+import android.arch.persistence.room.Dao
+import android.arch.persistence.room.Insert
+import android.arch.persistence.room.OnConflictStrategy
+import android.arch.persistence.room.Query
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -13,19 +17,6 @@ object RecordingStore {
     var filteredRecordings: ArrayList<Recording> = ArrayList()
 
     lateinit var sharedPrefs: SharedPreferences
-
-    fun add(recording: Recording): Boolean {
-        return if (!recordings.contains(recording) && recording.isValid) {
-            recordings.add(recording)
-            // write to prefs
-            val editor = sharedPrefs.edit()
-            editor.putString(STORAGE_KEY, Gson().toJson(recordings))
-            editor.apply()
-            true
-        } else {
-            false
-        }
-    }
 
     fun loadList() {
         val recordingListType = object : TypeToken<TreeSet<Recording>>() {}.type

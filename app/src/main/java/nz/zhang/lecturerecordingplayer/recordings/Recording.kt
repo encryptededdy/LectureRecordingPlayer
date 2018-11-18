@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
+import android.arch.persistence.room.Entity
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import android.support.annotation.NonNull
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.tonyodev.fetch.Fetch
@@ -32,12 +34,19 @@ const val FILEEXTENSION_REGEX: String = "(\\.preview|\\.mp4|\\.m4v|\\.mp3|-slide
 
 const val TIME_REGEX: String = "(?<=(\\/))\\d{12}(?=(\\.))"
 
+@Entity(primaryKeys = arrayOf("courseName", "courseNumber", "courseStream", "semesterNumber", "recordingDate"), tableName = "recordings")
 class Recording(url: String) : Comparable<Recording> {
+    @NonNull
     val courseName: String
+    @NonNull
     val courseNumber: String
+    @NonNull
     val courseStream: String
+    @NonNull
     val semesterNumber: String
+    @NonNull
     val recordingDate: Date
+    @NonNull
     val recordingSuffix: String
 
     val urlNoExtension: String
