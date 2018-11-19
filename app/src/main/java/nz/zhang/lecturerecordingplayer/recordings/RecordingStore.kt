@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
+import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -16,18 +17,11 @@ object RecordingStore {
     var recordings: TreeSet<Recording> = TreeSet()
     var filteredRecordings: ArrayList<Recording> = ArrayList()
 
-    lateinit var sharedPrefs: SharedPreferences
-
-    fun loadList() {
-        val recordingListType = object : TypeToken<TreeSet<Recording>>() {}.type
-        System.out.println(sharedPrefs.getString(STORAGE_KEY, ""))
-        val storedRecordings: TreeSet<Recording>? = Gson().fromJson(sharedPrefs.getString(STORAGE_KEY, ""), recordingListType)
-        if (storedRecordings != null) {
-            recordings = storedRecordings
-            for (recording : Recording in recordings)
-                recording.checkFS()
-        }
-        // Otherwise, just stick with the empty array
+    fun loadList(context: Context) {
+        val storedRecordings: TreeSet<Recording> = TreeSet(RecordingDatabase.getInstance(context)?.recordingDAO()?.getAllFromDB())
+        recordings = storedRecordings
+        for (recording : Recording in recordings)
+            recording.checkFS()
     }
 
     fun loadAllRecordings() {

@@ -18,8 +18,7 @@ class LectureRecordingApp : Application() {
         Fetch.newInstance(applicationContext).removeRequests()
 
         // Load recordings from sharedprefs
-        RecordingStore.sharedPrefs = getSharedPreferences(PREFS_NAME, 0)
-        RecordingStore.loadList()
+        RecordingStore.loadList(applicationContext)
 
         // Setup notification channel if we're on O R E O
         if (Build.VERSION.SDK_INT >= 26) {
